@@ -1,0 +1,189 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../core/strings.dart';
+import '../../data/setlist_controller.dart';
+import '../../domain/catalog.dart';
+import '../../domain/models.dart';
+import '../setlists/setlist_detail_screen.dart';
+import '../setlists/setlist_editor_screen.dart';
+import '../shared/function_chooser.dart';
+import '../shared/function_icon.dart';
+import '../shared/page_body.dart';
+import '../shared/section_header.dart';
+
+class SetlistsScreen extends StatelessWidget {
+  const SetlistsScreen({super.key});
+
+  Future<void> _newSetlist(BuildContext context) async {
+    final function = await showFunctionChooser(context);
+    if (function == null || !context.mounted) return;
+    final setlist = await Navigator.of(context).push<Setlist>(
+      MaterialPageRoute<Setlist>(
+        builder: (_) => SetlistEditorScreen(function: function),
+      ),
+    );
+    if (setlist != null && context.mounted) {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => SetlistDetailScreen(setlistId: setlist.id),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+    final setlists = context.watch<SetlistController>().all;
+    final scheme = Theme.of(context).colorScheme;
+
+    return SafeArea(
+      bottom: false,
+      child: PageBody(
+        maxWidth: 900,
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 36),
+          children: [
+            const SizedBox(height: 10),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        strings.setlistsTitle,
+                        style: Theme.of(context).textTheme.displaySmall,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        strings.setlistsSubtitle,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: scheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                FilledButton.icon(
+                  onPressed: () => _newSetlist(context),
+                  icon: const Icon(Icons.add_rounded, size: 19),
+                  label: Text(strings.newSetlist),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            if (setlists.isEmpty)
+              EmptyState(
+                icon: Icons.queue_music_rounded,
+                title: strings.emptySetlistsTitle,
+                body: strings.emptySetlistsBody,
+                actionLabel: strings.createFirstSetlist,
+                onAction: () => _newSetlist(context),
+              )
+            else ...[
+              SectionHeader(
+                title: strings.recentSetlists,
+                padding: const EdgeInsets.only(bottom: 12),
+              ),
+              for (final setlist in setlists)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _SetlistCard(
+                    setlist: setlist,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => SetlistDetailScreen(
+                          setlistId: setlist.id,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SetlistCard extends StatelessWidget {
+  const _SetlistCard({required this.setlist, required this.onTap});
+
+  final Setlist setlist;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final function = kFunctionsById[setlist.functionId];
+
+    return Material(
+      color: scheme.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: scheme.outlineVariant),
+          ),
+          child: Row(
+            children: [
+              Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer.withValues(alpha: 0.8),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  functionIcon(function?.iconName ?? ''),
+                  color: scheme.onPrimaryContainer,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      setlist.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${function?.label(strings.languageCode) ?? setlist.functionId}'
+                      ' · ${strings.songCount(setlist.songCount)}'
+                      ' · ${setlist.updatedAt.day}/${setlist.updatedAt.month}/${setlist.updatedAt.year}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: scheme.onSurfaceVariant,
+                size: 21,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
