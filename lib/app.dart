@@ -9,12 +9,19 @@ import 'data/local_store.dart';
 import 'data/services.dart';
 import 'data/setlist_controller.dart';
 import 'data/settings_controller.dart';
+import 'data/sundays_service.dart';
+import 'domain/models.dart';
 import 'ui/shell/app_shell.dart';
 
 class ChurchSongApp extends StatelessWidget {
-  const ChurchSongApp({super.key, required this.store});
+  const ChurchSongApp({
+    super.key,
+    required this.store,
+    this.personalSongs = const [],
+  });
 
   final LocalStore store;
+  final List<Song> personalSongs;
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +29,11 @@ class ChurchSongApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => SettingsController(store)),
         ChangeNotifierProvider(
-          create: (_) => LibraryController(store: store),
+          create: (_) =>
+              LibraryController(store: store, extraSongs: personalSongs),
         ),
         ChangeNotifierProvider(create: (_) => SetlistController(store)),
+        ChangeNotifierProvider(create: (_) => SundaysController()),
         Provider<SyncService>(create: (_) => LocalOnlySyncService()),
       ],
       child: const _App(),

@@ -34,6 +34,8 @@ abstract final class AppColors {
         TagKind.celebration => scheme.primary,
         TagKind.moment => scheme.tertiary,
         TagKind.theme => scheme.secondary,
+        TagKind.style => scheme.inversePrimary,
+        TagKind.instrument => scheme.primaryContainer,
       };
 }
 

@@ -5,7 +5,7 @@
 library;
 
 /// Categories used to organise tags in the UI.
-enum TagKind { celebration, moment, theme }
+enum TagKind { celebration, moment, theme, style, instrument }
 
 /// A free-form label attached to songs.
 ///
@@ -39,6 +39,22 @@ class SongSection {
   final String text;
 }
 
+/// How a song's text and score may be distributed inside the app.
+enum SongLicense {
+  /// Bundled demo lyrics written for this prototype.
+  demo,
+
+  /// Text safely in the public domain, full text included.
+  publicDomain,
+
+  /// Copyrighted content. Metadata only: the user adds their own copy.
+  copyrighted,
+
+  /// Text imported from the user's own songbooks for personal use only.
+  /// It must not be redistributed in a public build.
+  personalUse,
+}
+
 /// A liturgical song.
 ///
 /// [titles] is keyed by language code so that translated titles can be added
@@ -48,9 +64,13 @@ class Song {
     required this.id,
     required this.titles,
     required this.tagIds,
-    required this.sections,
+    this.sections = const [],
     this.author,
     this.keySignature,
+    this.youtubeId,
+    this.sheetUrl,
+    this.license = SongLicense.demo,
+    this.sourceNote,
     this.audioAsset,
     this.sheetAsset,
     this.duration,
@@ -64,6 +84,18 @@ class Song {
 
   /// Musical key, e.g. `Re maggiore`. Displayed to musicians.
   final String? keySignature;
+
+  /// YouTube video id for the in-app preview, when known.
+  final String? youtubeId;
+
+  /// Optional external link to a score or PDF.
+  final String? sheetUrl;
+
+  /// How the text may be shown and shared.
+  final SongLicense license;
+
+  /// attribution/availability note shown instead of or next to the text.
+  final String? sourceNote;
 
   /// Optional bundled audio file. Kept as a hook for real playback.
   final String? audioAsset;
@@ -81,6 +113,75 @@ class Song {
 
   bool matchesAnyTag(Iterable<String> tagIds) =>
       tagIds.any(this.tagIds.contains);
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'titles': titles,
+        'author': author,
+        'tagIds': tagIds,
+        'sections': [
+          for (final section in sections)
+            {'kind': section.kind.name, 'text': section.text},
+        ],
+        'keySignature': keySignature,
+        'youtubeId': youtubeId,
+        'sheetUrl': sheetUrl,
+        'license': switch (license) {
+          SongLicense.demo => 'demo',
+          SongLicense.publicDomain => 'publicDomain',
+          SongLicense.copyrighted => 'copyrighted',
+          SongLicense.personalUse => 'personalUse',
+        },
+        'sourceNote': sourceNote,
+        'duration': duration == null
+            ? null
+            : {
+                'minutes': duration!.inMinutes,
+                'seconds': duration!.inSeconds % 60,
+              },
+      };
+
+  factory Song.fromJson(Map<String, dynamic> json) => Song(
+      id: json['id'] as String,
+      titles: (json['titles'] as Map<String, dynamic>?)?.cast<String, String>() ??
+          {'it': (json['id'] as String?) ?? 'Canto'},
+      author: json['author'] as String?,
+      tagIds: (json['tagIds'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(),
+      sections: (json['sections'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map((section) => SongSection(
+                kind: SectionKind.values.firstWhere(
+                  (kind) => kind.name == section['kind'],
+                  orElse: () => SectionKind.verse,
+                ),
+                text: section['text'] as String? ?? '',
+              ))
+          .toList(),
+      keySignature: json['keySignature'] as String?,
+      youtubeId: json['youtubeId'] as String?,
+      sheetUrl: json['sheetUrl'] as String?,
+      license: switch (json['license']) {
+        'publicDomain' => SongLicense.publicDomain,
+        'copyrighted' => SongLicense.copyrighted,
+        'personalUse' => SongLicense.personalUse,
+        _ => SongLicense.demo,
+      },
+      sourceNote: json['sourceNote'] as String?,
+      duration: json['duration'] is Map<String, dynamic>
+          ? Duration(
+              minutes: (json['duration'] as Map<String, dynamic>)['minutes']
+                      as int? ??
+                  0,
+              seconds: (json['duration'])['seconds'] as int? ?? 0,
+            )
+          : null);
+}
+
+/// Identifies where a song came from, for editing/deleting rights.
+extension SongOrigin on Song {
+  bool get isUserSong => id.startsWith('us_');
 }
 
 /// A moment inside a liturgical celebration (ingresso, offertorio, ...).
@@ -255,32 +356,74 @@ class AppSettings {
     this.languageCode = 'it',
     this.themeMode = 'system',
     this.premiumUnlocked = false,
+    this.youtubeApiKey = '',
   });
 
   final String languageCode;
   final String themeMode;
   final bool premiumUnlocked;
 
+  /// Optional YouTube Data API key used by the song import flow.
+  final String youtubeApiKey;
+
   AppSettings copyWith({
     String? languageCode,
     String? themeMode,
     bool? premiumUnlocked,
+    String? youtubeApiKey,
   }) =>
       AppSettings(
         languageCode: languageCode ?? this.languageCode,
         themeMode: themeMode ?? this.themeMode,
         premiumUnlocked: premiumUnlocked ?? this.premiumUnlocked,
+        youtubeApiKey: youtubeApiKey ?? this.youtubeApiKey,
       );
 
   Map<String, dynamic> toJson() => {
         'languageCode': languageCode,
         'themeMode': themeMode,
         'premiumUnlocked': premiumUnlocked,
+        'youtubeApiKey': youtubeApiKey,
       };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
         languageCode: json['languageCode'] as String? ?? 'it',
         themeMode: json['themeMode'] as String? ?? 'system',
         premiumUnlocked: json['premiumUnlocked'] as bool? ?? false,
+        youtubeApiKey: json['youtubeApiKey'] as String? ?? '',
       );
+}
+
+/// One song assigned to a moment inside a ready-made template.
+class TemplateEntry {
+  const TemplateEntry({required this.momentId, required this.songId});
+
+  final String momentId;
+  final String songId;
+}
+
+/// A ready-made setlist ("Messa di Taizé", "Messa gregoriana", ...) the user
+/// can start from and then personalise.
+class SetlistTemplate {
+  const SetlistTemplate({
+    required this.id,
+    required this.titles,
+    required this.descriptions,
+    required this.functionId,
+    required this.entries,
+  });
+
+  final String id;
+  final Map<String, String> titles;
+  final Map<String, String> descriptions;
+  final String functionId;
+  final List<TemplateEntry> entries;
+
+  String title(String languageCode) =>
+      titles[languageCode] ?? titles['it'] ?? titles.values.first;
+
+  String description(String languageCode) =>
+      descriptions[languageCode] ??
+      descriptions['it'] ??
+      descriptions.values.first;
 }

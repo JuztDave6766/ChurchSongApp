@@ -10,6 +10,7 @@ import '../shared/section_header.dart';
 import '../shared/song_sheet.dart';
 import '../shared/song_tile.dart';
 import '../shared/tag_pill.dart';
+import 'song_editor_screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -151,6 +152,18 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     label: Text(strings.filterBy),
                     onPressed: _openFilters,
                   ),
+                  const SizedBox(width: 8),
+                  ActionChip(
+                    avatar: const Icon(Icons.add_rounded, size: 18),
+                    label: Text(strings.addSong),
+                    onPressed: () async {
+                      await Navigator.of(context).push<Song>(
+                        MaterialPageRoute<Song>(
+                          builder: (_) => const SongEditorScreen(),
+                        ),
+                      );
+                    },
+                  ),
                   if (_hasFilters) ...[
                     const SizedBox(width: 4),
                     TextButton(
@@ -274,6 +287,16 @@ class _TagFilterSheetState extends State<_TagFilterSheet> {
                       ),
                       _group(context, strings.celebrationMoments, moments),
                       _group(context, strings.themesLabel, themes),
+                      _group(
+                        context,
+                        strings.stylesLabel,
+                        kTags.where((tag) => tag.kind == TagKind.style),
+                      ),
+                      _group(
+                        context,
+                        strings.instrumentsLabel,
+                        kTags.where((tag) => tag.kind == TagKind.instrument),
+                      ),
                     ],
                   ),
                 ),

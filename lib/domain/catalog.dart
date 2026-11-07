@@ -44,6 +44,12 @@ const List<Tag> kTags = [
     en: 'Liturgy of the Word',
   ),
   Tag(id: 'offertorio', kind: TagKind.moment, it: 'Offertorio', en: 'Offertory'),
+  Tag(
+    id: 'versetto-alleluia',
+    kind: TagKind.moment,
+    it: 'Versetto dell\'alleluia',
+    en: 'Alleluia verse',
+  ),
   Tag(id: 'santo', kind: TagKind.moment, it: 'Santo', en: 'Holy'),
   Tag(id: 'comunione', kind: TagKind.moment, it: 'Comunione', en: 'Communion'),
   Tag(
@@ -93,6 +99,47 @@ const List<Tag> kTags = [
   Tag(id: 'eucaristia', kind: TagKind.theme, it: 'Eucaristia', en: 'Eucharist'),
   Tag(id: 'croce', kind: TagKind.theme, it: 'Croce', en: 'Cross'),
   Tag(id: 'comunita', kind: TagKind.theme, it: 'Comunità', en: 'Community'),
+
+  // Seasons and traditional repertoire.
+  Tag(id: 'avvento', kind: TagKind.theme, it: 'Avvento', en: 'Advent'),
+  Tag(id: 'natale', kind: TagKind.theme, it: 'Natale', en: 'Christmas'),
+  Tag(id: 'quaresima', kind: TagKind.theme, it: 'Quaresima', en: 'Lent'),
+  Tag(id: 'pasqua', kind: TagKind.theme, it: 'Pasqua', en: 'Easter'),
+  Tag(id: 'pentecoste', kind: TagKind.theme, it: 'Pentecoste', en: 'Pentecost'),
+  Tag(id: 'defunti', kind: TagKind.theme, it: 'Defunti', en: 'All Souls'),
+  Tag(
+    id: 'tradizionale',
+    kind: TagKind.theme,
+    it: 'Tradizionale',
+    en: 'Traditional',
+  ),
+
+  // Styles.
+  Tag(id: 'taize', kind: TagKind.style, it: 'Taizé', en: 'Taizé'),
+  Tag(id: 'lourdes', kind: TagKind.style, it: 'Lourdes', en: 'Lourdes'),
+  Tag(
+    id: 'gregorian',
+    kind: TagKind.style,
+    it: 'Gregoriano e latino',
+    en: 'Gregorian and Latin',
+  ),
+  Tag(
+    id: 'contemporaneo',
+    kind: TagKind.style,
+    it: 'Contemporaneo',
+    en: 'Contemporary',
+  ),
+
+  // Instruments.
+  Tag(id: 'chitarra', kind: TagKind.instrument, it: 'Chitarra', en: 'Guitar'),
+  Tag(id: 'organo', kind: TagKind.instrument, it: 'Organo', en: 'Organ'),
+  Tag(
+    id: 'pianoforte',
+    kind: TagKind.instrument,
+    it: 'Pianoforte',
+    en: 'Piano',
+  ),
+  Tag(id: 'corale', kind: TagKind.instrument, it: 'Corale', en: 'Choir'),
 ];
 
 final Map<String, Tag> kTagsById = {
@@ -106,6 +153,7 @@ const Set<String> kMomentIds = {
   'gloria',
   'salmo',
   'offertorio',
+  'versetto-alleluia',
   'santo',
   'comunione',
   'ringraziamento',
@@ -162,6 +210,14 @@ const List<LiturgicalFunction> kFunctions = [
         en: 'Liturgy of the Word',
         hintIt: 'Salmo responsoriale o canto alla Parola.',
         hintEn: 'Responsorial psalm or song for the Word.',
+      ),
+      LiturgicalMoment(
+        id: 'versetto-alleluia',
+        it: 'Versetto dell\'alleluia',
+        en: 'Alleluia verse',
+        hintIt: 'Canto acclamativo prima del Vangelo.',
+        hintEn: 'Acclamatory verse before the Gospel.',
+        optional: true,
       ),
       LiturgicalMoment(
         id: 'offertorio',
@@ -343,14 +399,15 @@ final Map<String, LiturgicalFunction> kFunctionsById = {
 // Salve Regina) are public domain.
 // ---------------------------------------------------------------------------
 
-const List<Song> kSongs = [
+const List<Song> kDemoSongs = [
   Song(
     id: 'cantiamo-al-signore',
     titles: {'it': 'Cantiamo al Signore'},
     author: 'Testo dimostrativo',
     keySignature: 'Re maggiore',
     duration: Duration(minutes: 3, seconds: 40),
-    tagIds: ['messa', 'ingresso', 'gioia', 'comunita'],
+    tagIds: ['messa', 'ingresso', 'gioia', 'comunita', 'versetto-alleluia',
+             'chitarra'],
     sections: [
       SongSection(
         kind: SectionKind.chorus,
@@ -424,7 +481,7 @@ const List<Song> kSongs = [
     author: 'Testo dimostrativo',
     keySignature: 'Do maggiore',
     duration: Duration(minutes: 4),
-    tagIds: ['messa', 'gloria', 'gioia'],
+    tagIds: ['messa', 'gloria', 'gioia', 'chitarra', 'pianoforte'],
     sections: [
       SongSection(
         kind: SectionKind.chorus,
@@ -967,7 +1024,7 @@ const List<Song> kSongs = [
     author: 'Testo dimostrativo',
     keySignature: 'Do maggiore',
     duration: Duration(minutes: 3, seconds: 20),
-    tagIds: ['preghiera', 'intercessione', 'pace'],
+    tagIds: ['preghiera', 'intercessione', 'pace', 'organo'],
     sections: [
       SongSection(
         kind: SectionKind.chorus,
@@ -1007,6 +1064,570 @@ const List<Song> kSongs = [
   ),
 ];
 
+// ---------------------------------------------------------------------------
+// Themed repertoire.
+//
+// Copyright policy:
+//  * [SongLicense.publicDomain] songs carry the full text (traditional prayers
+//    and Latin chants).
+//  * [SongLicense.copyrighted] songs are metadata only: title, metadata, one
+//    or two pointers (YouTube / sheet music). The user adds their own copy
+//    (canzoniere, PDF autorizzato). No lyrics are bundled and no theme is
+//    implied by a lyric excerpt.
+// ---------------------------------------------------------------------------
+
+const List<Song> kThemedSongs = [
+  // Taizé — Jacques Berthier, © Ateliers et Presses de Taizé. Metadata only.
+  Song(
+    id: 'taize-ubi-caritas',
+    titles: {'it': 'Ubi caritas et amor'},
+    author: 'Jacques Berthier · © Ateliers et Presses de Taizé',
+    keySignature: 'Mi minore',
+    duration: Duration(minutes: 3),
+    tagIds: [
+      'messa', 'comunione', 'pace', 'preghiera', 'taize', 'corale',
+      'chitarra', 'organo',
+    ],
+    youtubeId: 'z9zvDBPkgOk',
+    sheetUrl: 'https://www.taize.fr/en/learning-the-songs',
+    license: SongLicense.copyrighted,
+    sourceNote:
+        'Canzone di Taizé, protetta da copyright (testo e musica). Inserisci '
+        'il testo dal tuo canzoniere autorizzato; lo spartito è scaricabile '
+        'dal sito di Taizé.',
+  ),
+  Song(
+    id: 'taize-veni-sancte-spiritus',
+    titles: {'it': 'Veni Sancte Spiritus'},
+    author: 'Jacques Berthier · © Ateliers et Presses de Taizé',
+    keySignature: 'Fa minore',
+    duration: Duration(minutes: 3),
+    tagIds: [
+      'preghiera', 'intercessione', 'spirito-santo', 'taize', 'corale',
+      'chitarra', 'organo',
+    ],
+    youtubeId: 'Z1fR4SV55qg',
+    sheetUrl: 'https://www.taize.fr/en/learning-the-songs',
+    license: SongLicense.copyrighted,
+    sourceNote: 'Testo protetto: inseriscilo dal tuo canzoniere autorizzato.',
+  ),
+  Song(
+    id: 'taize-laudate-dominum',
+    titles: {'it': 'Laudate Dominum'},
+    author: 'Jacques Berthier · © Ateliers et Presses de Taizé',
+    keySignature: 'Sol maggiore',
+    duration: Duration(minutes: 2, seconds: 30),
+    tagIds: [
+      'messa', 'ingresso', 'apertura', 'gioia', 'preghiera', 'taize',
+      'corale', 'chitarra',
+    ],
+    sheetUrl: 'https://www.taize.fr/en/learning-the-songs',
+    license: SongLicense.copyrighted,
+    sourceNote: 'Testo protetto: inseriscilo dal tuo canzoniere autorizzato.',
+  ),
+  Song(
+    id: 'taize-laudate-omnes-gentes',
+    titles: {'it': 'Laudate omnes gentes'},
+    author: 'Jacques Berthier · © Ateliers et Presses de Taizé',
+    keySignature: 'Do maggiore',
+    duration: Duration(minutes: 2, seconds: 30),
+    tagIds: [
+      'messa', 'apertura', 'comunita', 'gioia', 'preghiera', 'taize',
+      'corale', 'chitarra',
+    ],
+    sheetUrl: 'https://www.taize.fr/en/learning-the-songs',
+    license: SongLicense.copyrighted,
+    sourceNote: 'Testo protetto: inseriscilo dal tuo canzoniere autorizzato.',
+  ),
+  Song(
+    id: 'taize-wait-for-the-lord',
+    titles: {'it': 'Wait for the Lord • Restate qui'},
+    author: 'Jacques Berthier · © Ateliers et Presses de Taizé',
+    keySignature: 'Si bemolle maggiore',
+    duration: Duration(minutes: 3),
+    tagIds: [
+      'adorazione', 'silenzio', 'ascolto', 'speranza', 'preghiera', 'taize',
+      'corale',
+    ],
+    sheetUrl: 'https://www.taize.fr/en/learning-the-songs',
+    license: SongLicense.copyrighted,
+    sourceNote: 'Testo protetto: inseriscilo dal tuo canzoniere autorizzato.',
+  ),
+  Song(
+    id: 'taize-restate-qui',
+    titles: {'it': 'Restate qui • Stay with me'},
+    author: 'Jacques Berthier · © Ateliers et Presses de Taizé',
+    keySignature: 'Mi minore',
+    duration: Duration(minutes: 3),
+    tagIds: [
+      'adorazione', 'adorazione-momento', 'fiducia', 'messa', 'preghiera',
+      'taize', 'corale',
+    ],
+    sheetUrl: 'https://www.taize.fr/en/learning-the-songs',
+    license: SongLicense.copyrighted,
+    sourceNote: 'Testo protetto: inseriscilo dal tuo canzoniere autorizzato.',
+  ),
+  Song(
+    id: 'taize-nada-te-turbe',
+    titles: {'it': 'Nada te turbe'},
+    author: 'Jacques Berthier · © Ateliers et Presses de Taizé',
+    keySignature: 'La minore',
+    duration: Duration(minutes: 3),
+    tagIds: ['preghiera', 'ascolto', 'fiducia', 'pace', 'taize', 'corale'],
+    sheetUrl: 'https://www.taize.fr/en/learning-the-songs',
+    license: SongLicense.copyrighted,
+    sourceNote:
+        '© Ateliers et Presses de Taizé — metadati only.',
+  ),
+
+  // Lourdes — canti tradizionali (testi di pubblico dominio).
+  Song(
+    id: 'lourdes-ave-maria',
+    titles: {'it': 'Ave Maria di Lourdes'},
+    author: 'Tradizionale (Lourdes)',
+    keySignature: 'Fa maggiore',
+    duration: Duration(minutes: 2, seconds: 30),
+    tagIds: ['preghiera', 'ascolto', 'mariano', 'lourdes', 'corale', 'organo'],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.chorus,
+        text: 'Ave, ave, ave Maria,\n'
+            'Ave, ave, ave Maria!',
+      ),
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Nella grotta di Massabielle\n'
+            'Bernadette ti vide, Maria:\n'
+            'fonte di grazia e di vita,\n'
+            'preghiamo sempre insieme a te.',
+      ),
+    ],
+  ),
+  Song(
+    id: 'lourdes-immacolata-maria',
+    titles: {'it': 'Immacolata Maria • Immaculate Mary'},
+    author: 'Tradizionale (Lourdes)',
+    keySignature: 'Sol maggiore',
+    duration: Duration(minutes: 3),
+    tagIds: ['preghiera', 'mariano', 'spirito-santo', 'lourdes', 'corale'],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.chorus,
+        text: 'Ave, o Immacolata Maria,\n'
+            'il nostro canto sale a te.\n'
+            'Dal profondo del cuore,\n'
+            'preghiamo sempre per te.',
+      ),
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Vergine umile e piena di grazia,\n'
+            'ascolta il canto di chi prende il cuore:\n'
+            'dove manca l\'amore, guidaci\n'
+            'fino alla fonte della vita.',
+      ),
+    ],
+  ),
+  Song(
+    id: 'lourdes-madonna-di-lourdes',
+    titles: {'it': 'La Madonna di Lourdes'},
+    author: 'Tradizionale (Lourdes)',
+    keySignature: 'Do maggiore',
+    duration: Duration(minutes: 3),
+    tagIds: ['preghiera', 'mariano', 'conclusione', 'lourdes', 'corale'],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.chorus,
+        text: 'Sia lodata Maria,\n'
+            'dolce madre di Lourdes,\n'
+            'che ai camminatori dona\n'
+            'la speranza e la fede.',
+      ),
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Alza lo sguardo alla grotta,\n'
+            'Bernadette ti accompagna:\n'
+            'fonte di vita e di preghiera,\n'
+            'Maria cammina accanto a noi.',
+      ),
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Dove l\'acqua sgorga puro,\n'
+            'dove il cuore ritrova la luce,\n'
+            'chi prega con te, Maria,\n'
+            'non cammina fuori strada.',
+      ),
+    ],
+  ),
+
+  // Gregoriano e repertorio latino — testi di pubblico dominio.
+  Song(
+    id: 'panis-angelicus',
+    titles: {'it': 'Panis angelicus'},
+    author: 'Testo: Tommaso d\'Aquino · Musica: César Franck',
+    keySignature: 'Re maggiore',
+    duration: Duration(minutes: 3, seconds: 30),
+    tagIds: [
+      'messa', 'comunione', 'eucaristia', 'gregorian', 'corale', 'organo',
+      'pianoforte',
+    ],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Panis angelicus\n'
+            'fit panis hominum;\n'
+            'dat panis caelicus\n'
+            'figuris terminum:\n'
+            'O res mirabilis!\n'
+            'Manducat Dominum\n'
+            'pauper, pauper servus et humilis.',
+      ),
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Te, trina Deitas\n'
+            'unaque, poscimus:\n'
+            'sic nos tu visita,\n'
+            'sicut te colimus;\n'
+            'per tuas semitas\n'
+            'duc nos quo tendimus,\n'
+            'ad lucem quam incolimus.',
+      ),
+    ],
+  ),
+  Song(
+    id: 'adoro-te-devote',
+    titles: {'it': 'Adoro te devote'},
+    author: 'Testo: Tommaso d\'Aquino',
+    keySignature: 'La minore',
+    duration: Duration(minutes: 3),
+    tagIds: ['adorazione', 'benedizione', 'eucaristia', 'gregorian', 'organo'],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Adoro te devote, latens Deitas,\n'
+            'quae sub his figuris vere latitas:\n'
+            'tibi se cor meum totum subiicit,\n'
+            'quia te contemplans totum deficit.',
+      ),
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Visus, tactus, gustus in te fallitur,\n'
+            'sed auditus solo tuto creditur:\n'
+            'credo quidquid dixit Dei Filius,\n'
+            'nihil veritati verbo verius.',
+      ),
+    ],
+  ),
+  Song(
+    id: 'tantum-ergo',
+    titles: {'it': 'Tantum ergo Sacramentum'},
+    author: 'Testo: Tommaso d\'Aquino',
+    keySignature: 'Mi bemolle maggiore',
+    duration: Duration(minutes: 2, seconds: 30),
+    tagIds: [
+      'adorazione', 'benedizione', 'reposizione', 'eucaristia', 'gregorian',
+      'corale', 'organo',
+    ],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Tantum ergo Sacramentum\n'
+            'veneremur cernui:\n'
+            'et antiquum documentum\n'
+            'novo cedat ritui:\n'
+            'praestet fides supplementum\n'
+            'sensuum defectui.',
+      ),
+      SongSection(
+        kind: SectionKind.chorus,
+        text: 'Genitori, Genitoque\n'
+            'laus et jubilatio,\n'
+            'salus, honor, virtus quoque\n'
+            'sit et benedictio:\n'
+            'procedenti ab utroque\n'
+            'compar sit laudatio. Amen.',
+      ),
+    ],
+  ),
+  Song(
+    id: 'veni-creator',
+    titles: {'it': 'Veni, Creator Spiritus'},
+    author: 'Tradizionale latino',
+    keySignature: 'Re minore',
+    duration: Duration(minutes: 3),
+    tagIds: [
+      'preghiera', 'apertura', 'spirito-santo', 'gregorian', 'corale',
+      'organo',
+    ],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Veni, Creator Spiritus,\n'
+            'mentes tuorum visita,\n'
+            'imple superna gratia,\n'
+            'quae tu creasti pectora.',
+      ),
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Qui diceris Paraclitus,\n'
+            'altissimi donum Dei,\n'
+            'fons vivus, ignis, caritas,\n'
+            'et spiritalis unctio.',
+      ),
+    ],
+  ),
+  Song(
+    id: 'attende-domine',
+    titles: {'it': 'Attende, Domine'},
+    author: 'Tradizionale latino (quaresma)',
+    keySignature: 'Mi minore',
+    duration: Duration(minutes: 3),
+    tagIds: [
+      'messa', 'atto-penitenziale', 'penitenza', 'gregorian', 'corale',
+      'organo',
+    ],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.chorus,
+        text: 'Attende, Domine, et miserere,\n'
+            'quia peccavimus tibi.',
+      ),
+    ],
+  ),
+  Song(
+    id: 'santo-xviii',
+    titles: {'it': 'Sanctus XVIII • Santo'},
+    author: 'Canto gregoriano (Kyriale)',
+    keySignature: 'Do minore',
+    duration: Duration(minutes: 2),
+    tagIds: ['messa', 'santo', 'eucaristia', 'gregorian', 'corale', 'organo'],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.chorus,
+        text: 'Sanctus, Sanctus, Sanctus\n'
+            'Dominus Deus Sabaoth.\n'
+            'Pleni sunt caeli et terra gloria tua.\n'
+            'Osanna in excelsis.',
+      ),
+      SongSection(
+        kind: SectionKind.verse,
+        text: 'Benedictus qui venit\n'
+            'in nomine Domini.\n'
+            'Osanna in excelsis.',
+      ),
+    ],
+  ),
+  Song(
+    id: 'adeste-fideles',
+    titles: {'it': 'Adeste fideles (Venite fedeli)'},
+    author: 'Tradizionale',
+    keySignature: 'Sol maggiore',
+    duration: Duration(minutes: 3, seconds: 30),
+    tagIds: [
+      'messa', 'ingresso', 'conclusione', 'gioia', 'gregorian', 'corale',
+      'organo',
+    ],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.chorus,
+        text: 'Adeste fideles, laeti, triumphantes,\n'
+            'venite, venite in Bethlehem.\n'
+            'Natum videte Regem Angelorum.\n'
+            'Venite adoremus, venite adoremus,\n'
+            'venite adoremus Dominum.',
+      ),
+    ],
+  ),
+  Song(
+    id: 'alleluia-gregoriano',
+    titles: {'it': 'Alleluia (versetto celebrativo)'},
+    author: 'Canto gregoriano',
+    keySignature: 'Re minore',
+    duration: Duration(minutes: 1, seconds: 30),
+    tagIds: [
+      'messa', 'versetto-alleluia', 'gioia', 'gregorian', 'corale', 'organo',
+    ],
+    license: SongLicense.publicDomain,
+    sections: [
+      SongSection(
+        kind: SectionKind.response,
+        text: 'Alleluia, alleluia, alleluia.',
+      ),
+    ],
+  ),
+
+  // Contemporaneo con chitarra — Gen Rosso / Gen Verde
+  // (© repertorio dei Focolari, protetto). Metadata only.
+  Song(
+    id: 'moderno-segni-del-tuo-amore',
+    titles: {'it': 'Segni del tuo amore'},
+    author: 'Gen Rosso / Gen Verde · © Ed. Focolare',
+    keySignature: 'Sol maggiore',
+    duration: Duration(minutes: 4),
+    tagIds: [
+      'messa', 'offertorio', 'comunita', 'preghiera', 'contemporaneo',
+      'chitarra',
+    ],
+    sheetUrl: 'https://www.genverde.it/en/music/songs/liturgical/',
+    license: SongLicense.copyrighted,
+    sourceNote:
+        'Repertorio Gen Rosso / Gen Verde, protetto da copyright. Inserisci il '
+        'testo dal canzoniere autorizzato.',
+  ),
+  Song(
+    id: 'moderno-dove-tu-sei',
+    titles: {'it': 'Dove tu sei'},
+    author: 'Gen Rosso · © Ed. Focolare',
+    keySignature: 'Mi maggiore',
+    duration: Duration(minutes: 4),
+    tagIds: [
+      'preghiera', 'ascolto', 'fiducia', 'contemporaneo', 'chitarra',
+      'pianoforte',
+    ],
+    youtubeId: 'MxObjsQpoG4',
+    license: SongLicense.copyrighted,
+    sourceNote: 'Testo protetto: inseriscilo dal tuo canzoniere autorizzato.',
+  ),
+  Song(
+    id: 'moderno-insieme-e-piu-bello',
+    titles: {'it': 'Insieme è più bello'},
+    author: 'Gen Verde / Gen Rosso · © Ed. Focolare',
+    keySignature: 'Re maggiore',
+    duration: Duration(minutes: 4),
+    tagIds: [
+      'messa', 'ingresso', 'comunita', 'gioia', 'preghiera', 'contemporaneo',
+      'chitarra',
+    ],
+    license: SongLicense.copyrighted,
+    sourceNote: 'Testo protetto: inseriscilo dal tuo canzoniere autorizzato.',
+  ),
+  Song(
+    id: 'moderno-pace-sia-pace-a-voi',
+    titles: {'it': 'Pace sia, pace a voi'},
+    author: 'Gen Rosso e Gen Verde · © Ed. Focolare',
+    keySignature: 'Do maggiore',
+    duration: Duration(minutes: 3, seconds: 30),
+    tagIds: [
+      'messa', 'congedo', 'pace', 'preghiera', 'contemporaneo', 'chitarra',
+    ],
+    license: SongLicense.copyrighted,
+    sourceNote: 'Testo protetto: inseriscilo dal tuo canzoniere autorizzato.',
+  ),
+];
+
+/// Full catalogue: demo songs + themed/repertoire songs.
+final List<Song> kSongs = [...kDemoSongs, ...kThemedSongs];
+
 final Map<String, Song> kSongsById = {
   for (final song in kSongs) song.id: song,
 };
+
+/// Ready-made themed setlists ("messe già pronte").
+const List<SetlistTemplate> kSetlistTemplates = [
+  SetlistTemplate(
+    id: 'tpl-preghiera-taize',
+    titles: {
+      'it': 'Preghiera di Taizé',
+      'en': 'Taizé Prayer',
+    },
+    descriptions: {
+      'it': 'Canti ripetuti di Taizé per un tempo di preghiera contemplativa.',
+      'en': 'Repeated Taizé chants for a time of contemplative prayer.',
+    },
+    functionId: 'preghiera',
+    entries: [
+      TemplateEntry(momentId: 'apertura', songId: 'taize-laudate-dominum'),
+      TemplateEntry(momentId: 'apertura', songId: 'taize-laudate-omnes-gentes'),
+      TemplateEntry(momentId: 'ascolto', songId: 'taize-wait-for-the-lord'),
+      TemplateEntry(momentId: 'ascolto', songId: 'taize-restate-qui'),
+      TemplateEntry(momentId: 'intercessione', songId: 'taize-veni-sancte-spiritus'),
+      TemplateEntry(momentId: 'intercessione', songId: 'taize-nada-te-turbe'),
+      TemplateEntry(momentId: 'conclusione', songId: 'taize-ubi-caritas'),
+    ],
+  ),
+  SetlistTemplate(
+    id: 'tpl-preghiera-lourdes',
+    titles: {
+      'it': 'Preghiera mariana di Lourdes',
+      'en': 'Lourdes Marian Prayer',
+    },
+    descriptions: {
+      'it': 'Canti tradizionali di Lourdes per una devozione alla Madonna.',
+      'en': 'Traditional Lourdes hymns for a Marian devotion.',
+    },
+    functionId: 'preghiera',
+    entries: [
+      TemplateEntry(momentId: 'apertura', songId: 'lourdes-ave-maria'),
+      TemplateEntry(momentId: 'ascolto', songId: 'lourdes-immacolata-maria'),
+      TemplateEntry(momentId: 'ascolto', songId: 'ave-maria'),
+      TemplateEntry(momentId: 'intercessione', songId: 'lourdes-madonna-di-lourdes'),
+      TemplateEntry(momentId: 'conclusione', songId: 'salve-regina'),
+    ],
+  ),
+  SetlistTemplate(
+    id: 'tpl-messa-gregoriana',
+    titles: {
+      'it': 'Messa in canto gregoriano',
+      'en': 'Gregorian Chant Mass',
+    },
+    descriptions: {
+      'it': 'Parti fisse in latino: canto gregoriano e repertorio classico.',
+      'en': 'Fixed parts in Latin: Gregorian chant and classical repertoire.',
+    },
+    functionId: 'messa',
+    entries: [
+      TemplateEntry(momentId: 'ingresso', songId: 'adeste-fideles'),
+      TemplateEntry(momentId: 'atto-penitenziale', songId: 'attende-domine'),
+      TemplateEntry(momentId: 'santo', songId: 'santo-xviii'),
+      TemplateEntry(momentId: 'comunione', songId: 'panis-angelicus'),
+    ],
+  ),
+  SetlistTemplate(
+    id: 'tpl-messa-scaletta-taize',
+    titles: {
+      'it': 'Messa di Taizé',
+      'en': 'Taizé Mass',
+    },
+    descriptions: {
+      'it': 'La Messa con i canti ripetuti di Taizé nei momenti fissi.',
+      'en': 'Mass with Taizé repetitive chants in the fixed parts.',
+    },
+    functionId: 'messa',
+    entries: [
+      TemplateEntry(momentId: 'ingresso', songId: 'taize-laudate-dominum'),
+      TemplateEntry(momentId: 'atto-penitenziale', songId: 'taize-restate-qui'),
+      TemplateEntry(
+        momentId: 'versetto-alleluia',
+        songId: 'taize-laudate-omnes-gentes',
+      ),
+      TemplateEntry(momentId: 'comunione', songId: 'taize-ubi-caritas'),
+    ],
+  ),
+  SetlistTemplate(
+    id: 'preghiera-contemporanea',
+    titles: {
+      'it': 'Preghiera con la chitarra',
+      'en': 'Contemporary Guitar Prayer',
+    },
+    descriptions: {
+      'it': 'Repertorio contemporaneo (Gen Rosso / Gen Verde) per un incontro di preghiera.',
+      'en': 'Contemporary repertoire (Gen Rosso / Gen Verde) for a prayer meeting.',
+    },
+    functionId: 'preghiera',
+    entries: [
+      TemplateEntry(momentId: 'apertura', songId: 'moderno-insieme-e-piu-bello'),
+      TemplateEntry(momentId: 'ascolto', songId: 'moderno-dove-tu-sei'),
+      TemplateEntry(momentId: 'intercessione', songId: 'moderno-segni-del-tuo-amore'),
+      TemplateEntry(momentId: 'conclusione', songId: 'moderno-pace-sia-pace-a-voi'),
+    ],
+  ),
+];

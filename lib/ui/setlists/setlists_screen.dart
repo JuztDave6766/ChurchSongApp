@@ -32,6 +32,94 @@ class SetlistsScreen extends StatelessWidget {
     }
   }
 
+  /// Creates a setlist from a ready-made themed template (Taizé, Lourdes,
+  /// Gregorian, contemporary).
+  Future<void> _fromTemplate(BuildContext context) async {
+    final strings = AppStrings.of(context);
+    final language = strings.languageCode;
+
+    final template = await showDialog<SetlistTemplate>(
+      context: context,
+      builder: (dialogContext) {
+        final scheme = Theme.of(dialogContext).colorScheme;
+        return SimpleDialog(
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(strings.templatesTitle),
+              Text(
+                strings.fromTemplate,
+                style: Theme.of(dialogContext)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: scheme.onSurfaceVariant),
+              ),
+            ],
+          ),
+          children: [
+            for (final template in kSetlistTemplates)
+              SimpleDialogOption(
+                onPressed: () => Navigator.of(dialogContext).pop(template),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              template.title(language),
+                              style: Theme.of(dialogContext)
+                                  .textTheme
+                                  .titleSmall,
+                            ),
+                          ),
+                          Text(
+                            ' · ${strings.songCount(template.entries.length)}',
+                            style: Theme.of(dialogContext).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                      Text(
+                        template.description(language),
+                        style: Theme.of(dialogContext)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: scheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+
+    if (template == null || !context.mounted) return;
+
+    final now = DateTime.now();
+    final setlist = context.read<SetlistController>().create(
+          name: template.title(language),
+          functionId: template.functionId,
+          items: [
+            for (var i = 0; i < template.entries.length; i++)
+              SetlistItem(
+                id: 'si_${now.microsecondsSinceEpoch}_$i',
+                songId: template.entries[i].songId,
+                momentId: template.entries[i].momentId,
+              ),
+          ],
+        );
+    if (!context.mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => SetlistDetailScreen(setlistId: setlist.id),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
@@ -69,10 +157,22 @@ class SetlistsScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                FilledButton.icon(
-                  onPressed: () => _newSetlist(context),
-                  icon: const Icon(Icons.add_rounded, size: 19),
-                  label: Text(strings.newSetlist),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () => _fromTemplate(context),
+                      icon: const Icon(Icons.diamond_outlined, size: 18),
+                      label: Text(strings.fromTemplate),
+                    ),
+                    FilledButton.icon(
+                      onPressed: () => _newSetlist(context),
+                      icon: const Icon(Icons.add_rounded, size: 19),
+                      label: Text(strings.newSetlist),
+                    ),
+                  ],
                 ),
               ],
             ),

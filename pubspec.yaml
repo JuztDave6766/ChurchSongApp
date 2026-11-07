@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
   provider: ^6.1.5
   shared_preferences: ^2.5.3
+  http: ^1.2.2
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -24,6 +26,7 @@ flutter:
 
   assets:
     - assets/licenses/
+    - assets/data/
 
   fonts:
     - family: Cormorant

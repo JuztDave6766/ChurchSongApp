@@ -6,25 +6,32 @@ import 'local_store.dart';
 import 'services.dart';
 
 /// Read-side of the song library plus all per-song user state
-/// (favourites and offline downloads).
+/// (favourites, offline downloads and user-created songs).
 class LibraryController extends ChangeNotifier {
   LibraryController({
     required this.store,
     this.downloadService = const DemoDownloadService(),
-  }) {
+    List<Song> extraSongs = const [],
+  }) : _extraSongs = List.unmodifiable(extraSongs) {
+    _extraSongsById = {for (final song in _extraSongs) song.id: song};
     _load();
   }
 
   final LocalStore store;
   final DownloadService downloadService;
 
-  final List<Song> songs = kSongs;
+  /// Repertoire imported from the user's own songbooks.
+  final List<Song> _extraSongs;
+  late final Map<String, Song> _extraSongsById;
+
+  final List<Song> _userSongs = [];
   final Set<String> _favoriteIds = {};
   final Set<String> _downloadedIds = {};
   final Set<String> _inProgressIds = {};
 
   static const _favoritesKey = 'favorites';
   static const _downloadsKey = 'downloads';
+  static const _userSongsKey = 'user_songs';
 
   void _load() {
     final favorites = store.readList(_favoritesKey);
@@ -39,9 +46,73 @@ class LibraryController extends ChangeNotifier {
         ..clear()
         ..addAll(downloads.whereType<String>());
     }
+    final userRaw = store.readList(_userSongsKey);
+    if (userRaw != null) {
+      _userSongs
+        ..clear()
+        ..addAll(
+          userRaw
+              .whereType<Map<String, dynamic>>()
+              .map(Song.fromJson)
+              .toList(),
+        );
+    }
   }
 
-  Song? songById(String id) => kSongsById[id];
+  /// Catalogue + personal repertoire + user-created songs, sorted by title.
+  List<Song> get songs {
+    final result = <Song>[...kSongs, ..._extraSongs, ..._userSongs];
+    result.sort((a, b) => a.title('it').compareTo(b.title('it')));
+    return result;
+  }
+
+  /// Only the songs created by the user.
+  List<Song> get userSongs => List.unmodifiable(_userSongs);
+
+  List<Song> songsWhere(bool Function(Song song) predicate) =>
+      songs.where(predicate).toList();
+
+  Song? songById(String id) {
+    for (final song in _userSongs) {
+      if (song.id == id) return song;
+    }
+    return _extraSongsById[id] ?? kSongsById[id];
+  }
+
+  Song? userSongById(String id) {
+    for (final song in _userSongs) {
+      if (song.id == id) return song;
+    }
+    return null;
+  }
+
+  /// Creates or updates a user song (id prefixed `us_`).
+  Future<void> saveUserSong(Song song) async {
+    assert(song.isUserSong, 'user songs must use the us_ id prefix');
+    final index = _userSongs.indexWhere((entry) => entry.id == song.id);
+    if (index >= 0) {
+      _userSongs[index] = song;
+    } else {
+      _userSongs.add(song);
+    }
+    notifyListeners();
+    await _persistUserSongs();
+  }
+
+  Future<void> deleteUserSong(String id) async {
+    _userSongs.removeWhere((song) => song.id == id);
+    _favoriteIds.remove(id);
+    _downloadedIds.remove(id);
+    notifyListeners();
+    await _persistUserSongs();
+    await store.writeList(_favoritesKey, _favoriteIds.toList());
+    await store.writeList(_downloadsKey, _downloadedIds.toList());
+  }
+
+  Future<void> _persistUserSongs() => store.writeList(
+        _userSongsKey,
+        _userSongs.map((song) => song.toJson()).toList(),
+      );
 
   List<Tag> tagsFor(Song song) =>
       song.tagIds.map((id) => kTagsById[id]).whereType<Tag>().toList();
@@ -125,8 +196,10 @@ class LibraryController extends ChangeNotifier {
     _favoriteIds.clear();
     _downloadedIds.clear();
     _inProgressIds.clear();
+    _userSongs.clear();
     notifyListeners();
     await store.remove(_favoritesKey);
     await store.remove(_downloadsKey);
+    await store.remove(_userSongsKey);
   }
 }

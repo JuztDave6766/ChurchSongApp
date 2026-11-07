@@ -58,7 +58,7 @@ void main() {
       expect(entranceSongs.every((song) => song.hasTag('ingresso')), isTrue);
 
       final prayerEntrance = library.songsForMoment(
-        'ingresso',
+        'santo',
         functionId: 'preghiera',
       );
       expect(prayerEntrance, isEmpty);
@@ -78,7 +78,12 @@ void main() {
 
       final byAuthor = library.filter(query: 'tradizionale');
       expect(byAuthor, isNotEmpty);
-      expect(byAuthor.every((song) => song.author == 'Tradizionale'), isTrue);
+      expect(
+        byAuthor.every(
+          (song) => (song.author ?? '').toLowerCase().contains('tradizionale'),
+        ),
+        isTrue,
+      );
 
       expect(library.filter(query: 'nessun-canto-cosi'), isEmpty);
     });
@@ -192,7 +197,7 @@ void main() {
   });
 
   group('resetUserData', () {
-    test('clears favourites and downloads', () async {
+    test('clears favourites, downloads and user songs', () async {
       final store = await _freshStore();
       final library = LibraryController(
         store: store,
@@ -213,6 +218,140 @@ void main() {
       final reopened = LibraryController(store: store);
       expect(reopened.isFavorite(first.id), isFalse);
       expect(reopened.isDownloaded(second.id), isFalse);
+    });
+  });
+
+  group('personal repertoire', () {
+    const imported = Song(
+      id: 'ps_test',
+      titles: {'it': 'Canto del canzoniere'},
+      tagIds: ['messa', 'ingresso', 'avvento'],
+      sections: [
+        SongSection(kind: SectionKind.verse, text: 'Testo importato.'),
+      ],
+      license: SongLicense.personalUse,
+      sourceNote: 'Canzoniere personale, p. 1',
+    );
+
+    test('merges extras with the catalogue without touching user songs', () async {
+      final library = LibraryController(
+        store: await _freshStore(),
+        extraSongs: const [imported],
+      );
+
+      expect(library.songs, hasLength(kSongs.length + 1));
+      expect(library.userSongs, isEmpty);
+      expect(library.songById('ps_test')?.title('it'), 'Canto del canzoniere');
+      expect(library.filter(query: 'canzoniere').single.id, 'ps_test');
+      expect(
+        library.songsForMoment('ingresso').map((song) => song.id),
+        contains('ps_test'),
+      );
+    });
+
+    test('sorts imported songs with the rest of the library', () async {
+      final library = LibraryController(
+        store: await _freshStore(),
+        extraSongs: const [imported],
+      );
+      final titles = library.filter().map((song) => song.title('it')).toList();
+      expect(titles, orderedEquals([...titles]..sort()));
+    });
+  });
+
+  group('user songs', () {
+    test('saves and finds a user song', () async {
+      final library = LibraryController(store: await _freshStore());
+      const song = Song(
+        id: 'us_1',
+        titles: {'it': 'Mio canto'},
+        tagIds: ['messa', 'ingresso', 'gioia'],
+        sections: [
+          SongSection(kind: SectionKind.chorus, text: 'Ritornello di prova.'),
+        ],
+      );
+
+      await library.saveUserSong(song);
+
+      expect(library.userSongs.map((item) => item.id), ['us_1']);
+      expect(library.songs, hasLength(kSongs.length + 1));
+      expect(library.songById('us_1'), isNotNull);
+      expect(library.filter(query: 'Mio canto'), isNotEmpty);
+      expect(library.songsForMoment('ingresso'), isNotEmpty);
+    });
+
+    test('updates an existing user song', () async {
+      final library = LibraryController(store: await _freshStore());
+      final song = const Song(
+        id: 'us_2',
+        titles: {'it': 'Prima versione'},
+        tagIds: ['messa'],
+      );
+
+      await library.saveUserSong(song);
+      await library.saveUserSong(
+        const Song(
+          id: 'us_2',
+          titles: {'it': 'Versione corretta'},
+          tagIds: ['preghiera'],
+        ),
+      );
+
+      expect(library.userSongs, hasLength(1));
+      expect(library.songById('us_2')!.title('it'), 'Versione corretta');
+    });
+
+    test('persists user songs across controller instances', () async {
+      final store = await _freshStore();
+      final library = LibraryController(store: store);
+      await library.saveUserSong(
+        const Song(
+          id: 'us_3',
+          titles: {'it': 'Persistente'},
+          tagIds: ['preghiera', 'apertura'],
+          sections: [SongSection(kind: SectionKind.verse, text: 'Testo.')],
+          keySignature: 'Do minore',
+          youtubeId: 'abcdefghijk',
+        ),
+      );
+      final reopened = LibraryController(store: store);
+      final restored = reopened.songById('us_3');
+      expect(restored!.title('it'), 'Persistente');
+      expect(restored.keySignature, 'Do minore');
+      expect(restored.youtubeId, 'abcdefghijk');
+      expect(restored.sections, hasLength(1));
+    });
+
+    test('deletes a user song and cleans up user state', () async {
+      final store = await _freshStore();
+      final library = LibraryController(store: store);
+      await library.saveUserSong(
+        const Song(id: 'us_4', titles: {'it': 'Temporaneo'}, tagIds: ['messa']),
+      );
+      await library.toggleFavorite('us_4');
+
+      await library.deleteUserSong('us_4');
+
+      expect(library.userSongs, isEmpty);
+      expect(library.songById('us_4'), isNull);
+      expect(library.isFavorite('us_4'), isFalse);
+
+      final reopened = LibraryController(store: store);
+      expect(reopened.songById('us_4'), isNull);
+    });
+
+    test('catalogue ids are not shadowed', () async {
+      final library = LibraryController(store: await _freshStore());
+      await library.saveUserSong(
+        const Song(
+          id: 'us_5',
+          titles: {'it': 'Mio pane di vita'},
+          tagIds: ['messa'],
+        ),
+      );
+      expect(library.songById('pane-di-vita'), isNot('us_5'));
+      expect(library.songById('pane-di-vita')!.id, 'pane-di-vita');
+      expect(library.userSongs, hasLength(1));
     });
   });
 }

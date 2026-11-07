@@ -46,3 +46,6 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Personal songbook PDFs (copyrighted); the generated asset is versioned.
+/song-sources/

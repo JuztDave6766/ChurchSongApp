@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import '../domain/models.dart';
+
 /// Lightweight, compile-time checked localisation.
 ///
 /// Every user-visible string goes through this class. Adding a language means
@@ -66,6 +68,68 @@ abstract class AppStrings {
   String get noSongs;
   String get themesLabel;
   String filtersCount(int count);
+
+  // Styles, instruments and repertoire.
+  String get stylesLabel;
+  String get instrumentsLabel;
+  String get youtubeLabel;
+  String get watchOnYoutube;
+  String get sheetMusic;
+  String get openSheet;
+  String get licenseLabel;
+  String licenseName(SongLicense license);
+  String get textProtectedTitle;
+  String get textProtectedBody;
+  String get personalSourceLabel;
+
+  // Add song flow.
+  String get addSong;
+  String get addSongTitle;
+  String get addSongMode;
+  String get addSongAutomatic;
+  String get addSongManual;
+  String get importTitleHint;
+  String get youtubeUrlLabel;
+  String get fetchInfo;
+  String get fetching;
+  String get searchOnline;
+  String get searchOnlineHint;
+  String get titleField;
+  String get authorField;
+  String get keyField;
+  String get textSectionsHint;
+  String get youtubeIdField;
+  String get sheetUrlField;
+  String get songSaved;
+  String get importedData;
+  String get importError;
+  String get editSong;
+  String get deleteSong;
+  String get deleteSongQuestion;
+
+  // Sunday readings.
+  String get sundaysCardTitle;
+  String get sundaysCardHint;
+  String get firstReading;
+  String get psalmReading;
+  String get psalmResponseLabel;
+  String get secondReading;
+  String get gospel;
+  String get suggestedPsalm;
+  String get suggestedAlleluia;
+  String get suggestedCommunion;
+  String get createSundaySetlist;
+  String get sundayNoData;
+
+  // Ready-made templates.
+  String get fromTemplate;
+  String get templatesTitle;
+  String get useTemplate;
+
+  // Settings: YouTube key.
+  String get youtubeApiKeyLabel;
+  String get youtubeApiKeyHint;
+  String get keySaved;
 
   // Song detail.
   String get songDetails;
@@ -273,6 +337,132 @@ class AppStringsIt extends AppStrings {
   @override
   String filtersCount(int count) =>
       count == 1 ? '1 filtro attivo' : '$count filtri attivi';
+
+  @override
+  String get stylesLabel => 'Stili';
+  @override
+  String get instrumentsLabel => 'Strumenti';
+  @override
+  String get youtubeLabel => 'YouTube';
+  @override
+  String get watchOnYoutube => 'Guarda su YouTube';
+  @override
+  String get sheetMusic => 'Spartito';
+  @override
+  String get openSheet => 'Apri lo spartito';
+  @override
+  String get licenseLabel => 'Licenza';
+  @override
+  String licenseName(SongLicense license) => switch (license) {
+        SongLicense.demo => 'Testo demo',
+        SongLicense.publicDomain => 'Pubblico dominio',
+        SongLicense.copyrighted => 'Diritti riservati',
+        SongLicense.personalUse => 'Canzoniere personale',
+      };
+  @override
+  String get textProtectedTitle => 'Testo non incluso';
+  @override
+  String get textProtectedBody =>
+      'Questo canto è protetto da copyright: il testo non è distribuito '
+      'dall\'app. Inseriscilo dal tuo canzoniere autorizzato e usa i link '
+      'qui sotto per l\'anteprima e lo spartito.';
+  @override
+  String get personalSourceLabel => 'Fonte';
+  @override
+  String get addSong => 'Aggiungi canto';
+  @override
+  String get addSongTitle => 'Aggiungi un canto';
+  @override
+  String get addSongMode => 'Come vuoi aggiungerlo?';
+  @override
+  String get addSongAutomatic => 'Automatico';
+  @override
+  String get addSongManual => 'Manuale';
+  @override
+  String get importTitleHint =>
+      'Incolla un link YouTube oppure scrivi il titolo e cerca online.';
+  @override
+  String get youtubeUrlLabel => 'Link YouTube*';
+  @override
+  String get fetchInfo => 'Estrai i dati';
+  @override
+  String get fetching => 'Ricerca...';
+  @override
+  String get searchOnline => 'Cerca online';
+  @override
+  String get searchOnlineHint =>
+      'Apre YouTube con la tua ricerca: copia poi titolo, autore e tag, '
+      'oppure incola il link per completare l\'importazione.';
+  @override
+  String get titleField => 'Titolo';
+  @override
+  String get authorField => 'Autore';
+  @override
+  String get keyField => 'Tonalità';
+  @override
+  String get textSectionsHint =>
+      'Una strofa per blocco, separata da una riga vuota. Scrivi "R:" in '
+      'prima riga per un ritornello.';
+  @override
+  String get youtubeIdField => 'ID video YouTube';
+  @override
+  String get sheetUrlField => 'Link allo spartito (URL)';
+  @override
+  String get songSaved => 'Canto salvato nella libreria';
+  @override
+  String get importedData => 'Dati recuperati: controlla e completa';
+  @override
+  String get importError => 'Importazione fallita. Controlla il link o la rete.';
+  @override
+  String get editSong => 'Modifica canto';
+  @override
+  String get deleteSong => 'Elimina canto';
+  @override
+  String get deleteSongQuestion =>
+      'Eliminare questo canto dalla tua libreria? Non si può annullare.';
+
+  @override
+  String get sundaysCardTitle => 'Letture del giorno';
+  @override
+  String get sundaysCardHint =>
+      'Letture domenicale (ciclo B) e canti suggeriti a tema.';
+  @override
+  String get firstReading => 'Prima lettura';
+  @override
+  String get psalmReading => 'Salmo responsoriale';
+  @override
+  String get psalmResponseLabel => 'Risposta';
+  @override
+  String get secondReading => 'Seconda lettura';
+  @override
+  String get gospel => 'Vangelo';
+  @override
+  String get suggestedPsalm => 'Per il salmo';
+  @override
+  String get suggestedAlleluia => 'Per l\'alleluia';
+  @override
+  String get suggestedCommunion => 'Per la comunione';
+  @override
+  String get createSundaySetlist => 'Crea una scaletta a tema';
+  @override
+  String get sundayNoData =>
+      'Le letture di questa domenica non sono presenti nella demo del '
+      'calendario (ciclo B: Avvento 2025 – Cristo Re 2026).';
+
+  @override
+  String get fromTemplate => 'Da modello';
+  @override
+  String get templatesTitle => 'Modelli pronti';
+  @override
+  String get useTemplate => 'Usa questo modello';
+
+  @override
+  String get youtubeApiKeyLabel => 'Chiave YouTube Data API (facoltativa)';
+  @override
+  String get youtubeApiKeyHint =>
+      'Abilita la ricerca automatica dei canti da titolo.';
+  @override
+  String get keySaved => 'Chiave salvata';
 
   @override
   String get songDetails => 'Canto';
@@ -584,6 +774,132 @@ class AppStringsEn extends AppStrings {
   @override
   String filtersCount(int count) =>
       count == 1 ? '1 active filter' : '$count active filters';
+
+  @override
+  String get stylesLabel => 'Styles';
+  @override
+  String get instrumentsLabel => 'Instruments';
+  @override
+  String get youtubeLabel => 'YouTube';
+  @override
+  String get watchOnYoutube => 'Watch on YouTube';
+  @override
+  String get sheetMusic => 'Sheet music';
+  @override
+  String get openSheet => 'Open the sheet music';
+  @override
+  String get licenseLabel => 'Licence';
+  @override
+  String licenseName(SongLicense license) => switch (license) {
+        SongLicense.demo => 'Demo text',
+        SongLicense.publicDomain => 'Public domain',
+        SongLicense.copyrighted => 'All rights reserved',
+        SongLicense.personalUse => 'Personal songbook',
+      };
+  @override
+  String get textProtectedTitle => 'Text not included';
+  @override
+  String get textProtectedBody =>
+      'This song is copyrighted and its lyrics are not distributed by the '
+      'app. Enter them from your authorised hymn book and use the links '
+      'below for the preview and the sheet music.';
+  @override
+  String get personalSourceLabel => 'Source';
+  @override
+  String get addSong => 'Add song';
+  @override
+  String get addSongTitle => 'Add a song';
+  @override
+  String get addSongMode => 'How do you want to add it?';
+  @override
+  String get addSongAutomatic => 'Automatic';
+  @override
+  String get addSongManual => 'Manual';
+  @override
+  String get importTitleHint =>
+      'Paste a YouTube link or type the title and search online.';
+  @override
+  String get youtubeUrlLabel => 'YouTube link*';
+  @override
+  String get fetchInfo => 'Fetch details';
+  @override
+  String get fetching => 'Searching...';
+  @override
+  String get searchOnline => 'Search online';
+  @override
+  String get searchOnlineHint =>
+      'Opens YouTube with your query: then copy title, author and tags, '
+      'or paste the link to complete the import.';
+  @override
+  String get titleField => 'Title';
+  @override
+  String get authorField => 'Author';
+  @override
+  String get keyField => 'Key';
+  @override
+  String get textSectionsHint =>
+      'One verse per block, separated by a blank line. Write "R:" on the '
+      'first line for a chorus.';
+  @override
+  String get youtubeIdField => 'YouTube video id';
+  @override
+  String get sheetUrlField => 'Sheet music link (URL)';
+  @override
+  String get songSaved => 'Song saved to your library';
+  @override
+  String get importedData => 'Details fetched: check and complete';
+  @override
+  String get importError => 'Import failed. Check the link or the connection.';
+  @override
+  String get editSong => 'Edit song';
+  @override
+  String get deleteSong => 'Delete song';
+  @override
+  String get deleteSongQuestion =>
+      'Delete this song from your library? This cannot be undone.';
+
+  @override
+  String get sundaysCardTitle => "Today's readings";
+  @override
+  String get sundaysCardHint =>
+      'Sunday readings (Year B) with themed song suggestions.';
+  @override
+  String get firstReading => 'First reading';
+  @override
+  String get psalmReading => 'Responsorial psalm';
+  @override
+  String get psalmResponseLabel => 'Response';
+  @override
+  String get secondReading => 'Second reading';
+  @override
+  String get gospel => 'Gospel';
+  @override
+  String get suggestedPsalm => 'For the psalm';
+  @override
+  String get suggestedAlleluia => 'For the alleluia';
+  @override
+  String get suggestedCommunion => 'For communion';
+  @override
+  String get createSundaySetlist => 'Create a themed setlist';
+  @override
+  String get sundayNoData =>
+      'The readings for this Sunday are not in the demo calendar '
+      '(Year B: Advent 2025 – Christ the King 2026).';
+
+  @override
+  String get fromTemplate => 'From template';
+  @override
+  String get templatesTitle => 'Ready-made templates';
+  @override
+  String get useTemplate => 'Use this template';
+
+  @override
+  String get youtubeApiKeyLabel => 'YouTube Data API key (optional)';
+  @override
+  String get youtubeApiKeyHint =>
+      'Enables automatic song lookup from the title.';
+  @override
+  String get keySaved => 'Key saved';
 
   @override
   String get songDetails => 'Song';

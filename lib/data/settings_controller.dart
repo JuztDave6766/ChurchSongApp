@@ -29,6 +29,15 @@ class SettingsController extends ChangeNotifier {
 
   bool get premiumUnlocked => _settings.premiumUnlocked;
 
+  String get youtubeApiKey => _settings.youtubeApiKey;
+
+  Future<void> setYoutubeApiKey(String apiKey) async {
+    if (_settings.youtubeApiKey == apiKey) return;
+    _settings = _settings.copyWith(youtubeApiKey: apiKey);
+    notifyListeners();
+    await _persist();
+  }
+
   Future<void> setLanguage(String languageCode) async {
     if (_settings.languageCode == languageCode) return;
     _settings = _settings.copyWith(languageCode: languageCode);

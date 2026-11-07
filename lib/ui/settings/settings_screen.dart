@@ -300,6 +300,11 @@ class SettingsScreen extends StatelessWidget {
             ),
 
             _SettingsSection(
+              title: strings.youtubeLabel,
+              child: _YoutubeKeyCard(),
+            ),
+
+            _SettingsSection(
               title: strings.sync,
               child: _Card(
                 padding: const EdgeInsets.all(18),
@@ -398,6 +403,62 @@ class SettingsScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _YoutubeKeyCard extends StatefulWidget {
+  const _YoutubeKeyCard();
+
+  @override
+  State<_YoutubeKeyCard> createState() => _YoutubeKeyCardState();
+}
+
+class _YoutubeKeyCardState extends State<_YoutubeKeyCard> {
+  late final TextEditingController _controller = TextEditingController(
+    text: context.read<SettingsController>().youtubeApiKey,
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final settings = context.read<SettingsController>();
+    await settings.setYoutubeApiKey(_controller.text.trim());
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppStrings.of(context).keySaved)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
+    return _Card(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _controller,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: strings.youtubeApiKeyLabel,
+              helperText: strings.youtubeApiKeyHint,
+            ),
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: _save,
+            icon: const Icon(Icons.vpn_key_rounded, size: 18),
+            label: Text(strings.save),
+          ),
+        ],
       ),
     );
   }
