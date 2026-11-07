@@ -168,13 +168,13 @@ class _SongSheet extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
                 decoration: BoxDecoration(
                   border: Border(top: BorderSide(color: scheme.outlineVariant)),
                 ),
                 child: Wrap(
                   spacing: 10,
-                  runSpacing: 10,
+                  runSpacing: 8,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     OutlinedButton.icon(
@@ -206,6 +206,11 @@ class _SongSheet extends StatelessWidget {
                       icon: const Icon(Icons.print_outlined, size: 18),
                       label: Text(strings.printSong),
                     ),
+                    OutlinedButton.icon(
+                      onPressed: () => _searchChords(context, song),
+                      icon: const Icon(Icons.search_rounded, size: 18),
+                      label: Text(strings.chordsSearch),
+                    ),
                     _TrackAction(song: song),
                     if (overridden)
                       TextButton.icon(
@@ -231,6 +236,16 @@ class _SongSheet extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _searchChords(BuildContext context, Song song) async {
+    final query = Uri.encodeComponent(
+      '${song.title('it')} ${song.author ?? ''} accordi'.trim(),
+    );
+    final uri = Uri.parse('https://www.google.com/search?q=$query');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Future<void> _edit(BuildContext context, Song song) async {

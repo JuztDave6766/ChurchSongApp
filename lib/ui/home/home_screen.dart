@@ -6,6 +6,7 @@ import '../../data/library_controller.dart';
 import '../../data/setlist_controller.dart';
 import '../../domain/catalog.dart';
 import '../../domain/models.dart';
+import '../../domain/seasons.dart';
 import '../function/function_screen.dart';
 import '../setlists/setlist_detail_screen.dart';
 import '../shared/function_chooser.dart';
@@ -19,11 +20,14 @@ class HomeScreen extends StatelessWidget {
   final VoidCallback onOpenSetlists;
 
   Future<void> _prepareCelebration(BuildContext context) async {
-    final function = await showFunctionChooser(context);
-    if (function != null && context.mounted) {
+    final choice = await showFunctionChooser(context);
+    if (choice != null && context.mounted) {
       await Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) => FunctionScreen(function: function),
+          builder: (_) => FunctionScreen(
+            function: choice.function,
+            prayerVariant: choice.prayerVariant,
+          ),
         ),
       );
     }
@@ -166,7 +170,10 @@ class HomeScreen extends StatelessWidget {
                   spacing: gap,
                   runSpacing: gap,
                   children: [
-                    for (final function in kFunctions)
+                    for (final function in kFunctions.where((f) =>
+                        f.seasonIds.isEmpty ||
+                        f.seasonIds.contains(
+                          seasonFor(DateTime.now()).name)))
                       SizedBox(
                         width: width,
                         height: 186,

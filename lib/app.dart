@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'core/strings.dart';
 import 'core/theme.dart';
 import 'data/library_controller.dart';
+import 'data/calendar_service.dart';
 import 'data/local_store.dart';
 import 'data/setlist_controller.dart';
 import 'data/settings_controller.dart';
@@ -32,6 +33,7 @@ class ChurchSongApp extends StatelessWidget {
               LibraryController(store: store, catalogue: personalSongs),
         ),
         ChangeNotifierProvider(create: (_) => SetlistController(store)),
+        ChangeNotifierProvider(create: (_) => LiturgicalCalendarController()),
         ChangeNotifierProvider(create: (_) => SundaysController()),
       ],
       child: const _App(),

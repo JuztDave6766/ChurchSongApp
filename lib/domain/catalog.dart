@@ -266,6 +266,7 @@ const List<LiturgicalFunction> kFunctions = [
     descriptionEn:
         'Fourteen stations to walk with Christ towards Calvary.',
     iconName: 'route',
+    seasonIds: ['quaresima'],
     moments: [
       LiturgicalMoment(
         id: 'introduzione',

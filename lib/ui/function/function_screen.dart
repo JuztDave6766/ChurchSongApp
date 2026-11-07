@@ -7,6 +7,7 @@ import '../../data/library_controller.dart';
 import '../../data/setlist_controller.dart';
 import '../../data/sundays_service.dart';
 import '../../domain/models.dart';
+import '../shared/function_chooser.dart';
 import '../setlists/setlist_detail_screen.dart';
 import '../setlists/setlist_editor_screen.dart';
 import '../shared/function_icon.dart';
@@ -18,14 +19,22 @@ import 'moment_songs_screen.dart';
 
 /// Overview of a celebration: each moment with the number of suitable songs.
 class FunctionScreen extends StatelessWidget {
-  const FunctionScreen({super.key, required this.function});
+  const FunctionScreen({
+    super.key,
+    required this.function,
+    this.prayerVariant,
+  });
 
   final LiturgicalFunction function;
+  final PrayerVariant? prayerVariant;
 
   Future<void> _createSetlist(BuildContext context) async {
     final setlist = await Navigator.of(context).push<Setlist>(
       MaterialPageRoute<Setlist>(
-        builder: (_) => SetlistEditorScreen(function: function),
+        builder: (_) => SetlistEditorScreen(
+          function: function,
+          prayerVariant: prayerVariant,
+        ),
       ),
     );
     if (setlist != null && context.mounted) {
@@ -84,6 +93,13 @@ class FunctionScreen extends StatelessWidget {
                             .labelMedium
                             ?.copyWith(color: scheme.secondary),
                       ),
+                      if (prayerVariant != null) ...[
+                        const SizedBox(height: 6),
+                        Chip(
+                          label: Text(prayerVariant!.label(strings.languageCode)),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
                     ],
                   ),
                 ),

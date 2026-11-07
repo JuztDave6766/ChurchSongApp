@@ -950,6 +950,15 @@ def build_final(candidates: list[Candidate]) -> list[dict]:
         else:
             final.extend(group)
 
+    # Remove sections that are not part of the song (bleed from the
+    # adjacent text in the source PDFs).
+    _P0_SECTION_TRIMS = {
+        "ps_inno-a-san-giuseppe": (8, 17),
+        "ps_gesu-mio-con-dure-funi": (7, 11),
+        "ps_inno-a-santa-rita-da-cascia": (18, 24),
+        "ps_preghiera-di-san-francesco": (4, 7),
+        "ps_vivere-la-vita": (5, 7),
+    }
     final.sort(key=lambda c: titlecase_title(c.title))
     used: dict[str, int] = {}
     output: list[dict] = []
@@ -967,13 +976,18 @@ def build_final(candidates: list[Candidate]) -> list[dict]:
         note = "; ".join(source_parts)
         if candidate.author:
             note = f"{note} — {candidate.author}"
+        sections = candidate.sections
+        trim = _P0_SECTION_TRIMS.get(song_id)
+        if trim is not None:
+            lo, hi = trim
+            sections = sections[: lo - 1] + sections[hi:]
         output.append(
             {
                 "id": song_id,
                 "titles": {"it": title},
                 "author": candidate.author,
                 "tagIds": candidate.tags,
-                "sections": candidate.sections,
+                "sections": sections,
                 "license": "personalUse",
                 "sourceNote": note,
             }

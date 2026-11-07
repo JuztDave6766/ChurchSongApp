@@ -267,6 +267,7 @@ class LiturgicalFunction {
     required this.descriptionEn,
     required this.moments,
     required this.iconName,
+    this.seasonIds = const [],
   });
 
   final String id;
@@ -278,6 +279,9 @@ class LiturgicalFunction {
 
   /// Icon key resolved by the UI layer to keep this model Flutter-free.
   final String iconName;
+
+  /// Seasons in which this celebration is shown. Empty means always available.
+  final List<String> seasonIds;
 
   String label(String languageCode) => languageCode == 'en' ? en : it;
 

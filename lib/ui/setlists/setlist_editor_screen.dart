@@ -7,6 +7,7 @@ import '../../data/library_controller.dart';
 import '../../data/setlist_controller.dart';
 import '../../domain/models.dart';
 import '../shared/page_body.dart';
+import '../shared/function_chooser.dart';
 import 'song_picker_sheet.dart';
 
 /// Create or edit a setlist for [function].
@@ -17,10 +18,12 @@ class SetlistEditorScreen extends StatefulWidget {
     super.key,
     required this.function,
     this.existing,
+    this.prayerVariant,
   });
 
   final LiturgicalFunction function;
   final Setlist? existing;
+  final PrayerVariant? prayerVariant;
 
   @override
   State<SetlistEditorScreen> createState() => _SetlistEditorScreenState();
@@ -43,8 +46,12 @@ class _SetlistEditorScreenState extends State<SetlistEditorScreen> {
     _items = List.of(widget.existing?.items ?? const <SetlistItem>[]);
     final now = DateTime.now();
     _nameController.text = widget.existing?.name ??
-        '${widget.function.label(strings.languageCode)} · '
-            '${now.day}/${now.month}';
+        (widget.prayerVariant == null
+            ? '${widget.function.label(strings.languageCode)} · '
+                '${now.day}/${now.month}'
+            : '${widget.function.label(strings.languageCode)} '
+                '(${widget.prayerVariant!.label(strings.languageCode)}) · '
+                '${now.day}/${now.month}');
   }
 
   @override

@@ -111,6 +111,17 @@ abstract class AppStrings {
   String get sundaysCardTitle;
   String get sundaysCardHint;
   String get firstReading;
+  String get prayerVariantTitle;
+  String get prayerVariantHint;
+  String get navCalendar;
+  String get calendarTitle;
+  String get calendarSubtitle;
+  String get calendarToday;
+  String get calendarNoData;
+  String get prepareMassForDay;
+  String get saintsOfTheDay;
+  String get massOfDay;
+  String get chordsSearch;
   String get psalmReading;
   String get psalmResponseLabel;
   String get secondReading;
@@ -162,6 +173,7 @@ abstract class AppStrings {
   String get setlistSaved;
   String get noSongsYet;
   String get addSongs;
+  String get replaceSong;
   String get addToMoment;
   String get chooseSong;
   String get add;
@@ -453,6 +465,31 @@ class AppStringsIt extends AppStrings {
   String get sundaysCardHint =>
       'Letture domenicali (Anno A, Avvento 2025 – Cristo Re 2026) e canti suggeriti a tema.';
   @override
+  String get prayerVariantTitle => 'Tipo di preghiera';
+  @override
+  String get prayerVariantHint =>
+      'Scegli se è una preghiera libera o dal breviario, di mattina o di sera.';
+  @override
+  String get navCalendar => 'Calendario';
+  @override
+  String get calendarTitle => 'Calendario liturgico';
+  @override
+  String get calendarSubtitle =>
+      'Tempi liturgici, santi e messe del giorno per l\'Anno A.';
+  @override
+  String get calendarToday => 'Oggi';
+  @override
+  String get calendarNoData =>
+      'Nessun dato verificato per questa data.';
+  @override
+  String get prepareMassForDay => 'Prepara la Messa del giorno';
+  @override
+  String get saintsOfTheDay => 'Santo del giorno';
+  @override
+  String get massOfDay => 'Messa del giorno';
+  @override
+  String get chordsSearch => 'Cerca accordi online';
+  @override
   String get firstReading => 'Prima lettura';
   @override
   String get psalmReading => 'Salmo responsoriale';
@@ -550,6 +587,7 @@ class AppStringsIt extends AppStrings {
   String get noSongsYet => 'Nessun canto in questa scaletta';
   @override
   String get addSongs => 'Aggiungi canti';
+  String get replaceSong => 'Sostituisci canto';
   @override
   String get addToMoment => 'Aggiungi a un momento';
   @override
@@ -952,6 +990,31 @@ class AppStringsEn extends AppStrings {
   String get sundaysCardHint =>
       'Sunday readings (Year A, Advent 2025 – Christ the King 2026) with themed song suggestions.';
   @override
+  String get prayerVariantTitle => 'Prayer type';
+  @override
+  String get prayerVariantHint =>
+      'Choose a free prayer or the breviary, morning or evening.';
+  @override
+  String get navCalendar => 'Calendar';
+  @override
+  String get calendarTitle => 'Liturgical calendar';
+  @override
+  String get calendarSubtitle =>
+      'Liturgical seasons, saints and daily Masses for Year A.';
+  @override
+  String get calendarToday => 'Today';
+  @override
+  String get calendarNoData =>
+      'No verified data for this date.';
+  @override
+  String get prepareMassForDay => 'Prepare the day\'s Mass';
+  @override
+  String get saintsOfTheDay => 'Saint of the day';
+  @override
+  String get massOfDay => 'Mass of the day';
+  @override
+  String get chordsSearch => 'Search chords online';
+  @override
   String get firstReading => 'First reading';
   @override
   String get psalmReading => 'Responsorial psalm';
@@ -1049,6 +1112,7 @@ class AppStringsEn extends AppStrings {
   String get noSongsYet => 'No songs in this setlist';
   @override
   String get addSongs => 'Add songs';
+  String get replaceSong => 'Replace song';
   @override
   String get addToMoment => 'Add to a moment';
   @override

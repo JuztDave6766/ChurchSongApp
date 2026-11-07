@@ -5,6 +5,7 @@ import '../home/home_screen.dart';
 import '../library/library_screen.dart';
 import '../setlists/setlists_screen.dart';
 import '../settings/settings_screen.dart';
+import '../calendar/calendar_screen.dart';
 import '../shared/section_header.dart';
 
 /// Responsive shell: bottom navigation on phones, navigation rail on tablets
@@ -19,7 +20,7 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int _index = 0;
 
-  void _openSetlists() => setState(() => _index = 2);
+  void _openSetlists() => setState(() => _index = 3);
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,7 @@ class _AppShellState extends State<AppShell> {
 
     final pages = <Widget>[
       HomeScreen(onOpenSetlists: _openSetlists),
+      const CalendarScreen(),
       const LibraryScreen(),
       const SetlistsScreen(),
       const SettingsScreen(),
@@ -77,6 +79,11 @@ class _AppShellState extends State<AppShell> {
                     label: Text(strings.navHome),
                   ),
                   NavigationRailDestination(
+                    icon: const Icon(Icons.calendar_month_outlined),
+                    selectedIcon: const Icon(Icons.calendar_month_rounded),
+                    label: Text(strings.navCalendar),
+                  ),
+                  NavigationRailDestination(
                     icon: const Icon(Icons.library_music_outlined),
                     selectedIcon: const Icon(Icons.library_music_rounded),
                     label: Text(strings.navSongs),
@@ -114,6 +121,11 @@ class _AppShellState extends State<AppShell> {
             icon: const Icon(Icons.wb_sunny_outlined),
             selectedIcon: const Icon(Icons.wb_sunny_rounded),
             label: strings.navHome,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.calendar_month_outlined),
+            selectedIcon: const Icon(Icons.calendar_month_rounded),
+            label: strings.navCalendar,
           ),
           NavigationDestination(
             icon: const Icon(Icons.library_music_outlined),

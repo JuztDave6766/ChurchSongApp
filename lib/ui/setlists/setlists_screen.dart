@@ -16,11 +16,11 @@ class SetlistsScreen extends StatelessWidget {
   const SetlistsScreen({super.key});
 
   Future<void> _newSetlist(BuildContext context) async {
-    final function = await showFunctionChooser(context);
-    if (function == null || !context.mounted) return;
+    final choice = await showFunctionChooser(context);
+    if (choice == null || !context.mounted) return;
     final setlist = await Navigator.of(context).push<Setlist>(
       MaterialPageRoute<Setlist>(
-        builder: (_) => SetlistEditorScreen(function: function),
+        builder: (_) => SetlistEditorScreen(function: choice.function),
       ),
     );
     if (setlist != null && context.mounted) {

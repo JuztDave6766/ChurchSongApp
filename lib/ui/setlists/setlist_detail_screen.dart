@@ -13,6 +13,7 @@ import '../shared/section_header.dart';
 import '../shared/song_sheet.dart';
 import '../shared/song_tile.dart';
 import 'setlist_editor_screen.dart';
+import 'song_picker_sheet.dart';
 
 class SetlistDetailScreen extends StatefulWidget {
   const SetlistDetailScreen({super.key, required this.setlistId});
@@ -173,6 +174,44 @@ class _SetlistDetailScreenState extends State<SetlistDetailScreen> {
     );
   }
 
+  Future<void> _replaceSong(
+    BuildContext context,
+    Setlist setlist,
+    SetlistItem item,
+    LiturgicalFunction? function,
+  ) async {
+    final strings = AppStrings.of(context);
+    final controller = context.read<SetlistController>();
+    if (function == null) return;
+    final moment = function.momentById(item.momentId ?? '') ?? function.moments.first;
+    final picked = await showSongPicker(
+      context,
+      function: function,
+      moment: moment,
+      excludedSongIds: {item.songId},
+    );
+    if (picked == null || picked.isEmpty || !context.mounted) return;
+    final replacement = picked.first;
+    final updatedItems = setlist.items
+        .map((entry) => entry.id == item.id
+            ? SetlistItem(
+                id: entry.id,
+                songId: replacement.id,
+                momentId: entry.momentId,
+                note: entry.note,
+              )
+            : entry)
+        .toList();
+    final now = DateTime.now();
+    await controller.save(
+      setlist.copyWith(items: updatedItems, updatedAt: now),
+    );
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(strings.replaceSong)),
+    );
+  }
+
   List<Widget> _momentSections(
     BuildContext context,
     Setlist setlist,
@@ -232,10 +271,20 @@ class _SetlistDetailScreenState extends State<SetlistDetailScreen> {
               onTap: () => showSongSheet(context, song),
               trailing: Padding(
                 padding: const EdgeInsets.only(right: 4),
-                child: Icon(
-                  Icons.chevron_right_rounded,
-                  size: 20,
-                  color: scheme.onSurfaceVariant,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      tooltip: strings.replaceSong,
+                      icon: const Icon(Icons.swap_horiz_rounded, size: 20),
+                      onPressed: () => _replaceSong(context, setlist, item, function),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      size: 20,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ],
                 ),
               ),
             ),
