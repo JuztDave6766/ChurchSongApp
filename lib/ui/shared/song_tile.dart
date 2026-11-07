@@ -37,7 +37,6 @@ class SongTile extends StatelessWidget {
       ..sort((a, b) => a.kind.index.compareTo(b.kind.index));
     final visibleTags = tags.take(dense ? 2 : 3).toList();
     final isFavorite = library.isFavorite(song.id);
-    final isDownloaded = library.isDownloaded(song.id);
 
     return Material(
       color: selected
@@ -82,16 +81,20 @@ class SongTile extends StatelessWidget {
                                 ?.copyWith(fontSize: dense ? 18 : 20),
                           ),
                         ),
-                        if (isDownloaded) ...[
-                          const SizedBox(width: 6),
-                          Icon(
-                            Icons.offline_pin_rounded,
-                            size: 16,
-                            color: scheme.tertiary,
-                          ),
-                        ],
                       ],
                     ),
+                    if (song.version case final version? when version.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        version,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: scheme.secondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ],
                     if (song.author case final author?) ...[
                       const SizedBox(height: 2),
                       Text(

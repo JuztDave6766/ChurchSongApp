@@ -50,8 +50,10 @@ enum SongLicense {
   /// Copyrighted content. Metadata only: the user adds their own copy.
   copyrighted,
 
-  /// Text imported from the user's own songbooks for personal use only.
-  /// It must not be redistributed in a public build.
+  /// Text imported from the user's own songbooks.
+  ///
+  /// The demo owner declares the licence for this repertoire; the app keeps
+  /// the source note and credits attached to every song.
   personalUse,
 }
 
@@ -66,6 +68,7 @@ class Song {
     required this.tagIds,
     this.sections = const [],
     this.author,
+    this.version,
     this.keySignature,
     this.youtubeId,
     this.sheetUrl,
@@ -79,6 +82,12 @@ class Song {
   final String id;
   final Map<String, String> titles;
   final String? author;
+
+  /// Distinguishes multiple musical settings of the same title, e.g.
+  /// `Gen Verde` or `Versione 1987`. Kept separate from [titles] so search
+  /// and sorting stay clean.
+  final String? version;
+
   final List<String> tagIds;
   final List<SongSection> sections;
 
@@ -109,15 +118,52 @@ class Song {
   String title(String languageCode) =>
       titles[languageCode] ?? titles['it'] ?? titles.values.first;
 
+  /// Title with the version appended, used where a single line is needed.
+  String displayTitle(String languageCode) =>
+      version == null || version!.isEmpty
+          ? title(languageCode)
+          : '${title(languageCode)} · $version';
+
   bool hasTag(String tagId) => tagIds.contains(tagId);
 
   bool matchesAnyTag(Iterable<String> tagIds) =>
       tagIds.any(this.tagIds.contains);
 
+  Song copyWith({
+    Map<String, String>? titles,
+    String? author,
+    String? version,
+    List<String>? tagIds,
+    List<SongSection>? sections,
+    String? keySignature,
+    String? youtubeId,
+    String? sheetUrl,
+    SongLicense? license,
+    String? sourceNote,
+    Duration? duration,
+  }) =>
+      Song(
+        id: id,
+        titles: titles ?? this.titles,
+        author: author ?? this.author,
+        version: version ?? this.version,
+        tagIds: tagIds ?? this.tagIds,
+        sections: sections ?? this.sections,
+        keySignature: keySignature ?? this.keySignature,
+        youtubeId: youtubeId ?? this.youtubeId,
+        sheetUrl: sheetUrl ?? this.sheetUrl,
+        license: license ?? this.license,
+        sourceNote: sourceNote ?? this.sourceNote,
+        duration: duration ?? this.duration,
+        audioAsset: audioAsset,
+        sheetAsset: sheetAsset,
+      );
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'titles': titles,
         'author': author,
+        'version': version,
         'tagIds': tagIds,
         'sections': [
           for (final section in sections)
@@ -146,6 +192,7 @@ class Song {
       titles: (json['titles'] as Map<String, dynamic>?)?.cast<String, String>() ??
           {'it': (json['id'] as String?) ?? 'Canto'},
       author: json['author'] as String?,
+      version: json['version'] as String?,
       tagIds: (json['tagIds'] as List<dynamic>? ?? const [])
           .whereType<String>()
           .toList(),
@@ -355,42 +402,28 @@ class AppSettings {
   const AppSettings({
     this.languageCode = 'it',
     this.themeMode = 'system',
-    this.premiumUnlocked = false,
-    this.youtubeApiKey = '',
   });
 
   final String languageCode;
   final String themeMode;
-  final bool premiumUnlocked;
-
-  /// Optional YouTube Data API key used by the song import flow.
-  final String youtubeApiKey;
 
   AppSettings copyWith({
     String? languageCode,
     String? themeMode,
-    bool? premiumUnlocked,
-    String? youtubeApiKey,
   }) =>
       AppSettings(
         languageCode: languageCode ?? this.languageCode,
         themeMode: themeMode ?? this.themeMode,
-        premiumUnlocked: premiumUnlocked ?? this.premiumUnlocked,
-        youtubeApiKey: youtubeApiKey ?? this.youtubeApiKey,
       );
 
   Map<String, dynamic> toJson() => {
         'languageCode': languageCode,
         'themeMode': themeMode,
-        'premiumUnlocked': premiumUnlocked,
-        'youtubeApiKey': youtubeApiKey,
       };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
         languageCode: json['languageCode'] as String? ?? 'it',
         themeMode: json['themeMode'] as String? ?? 'system',
-        premiumUnlocked: json['premiumUnlocked'] as bool? ?? false,
-        youtubeApiKey: json['youtubeApiKey'] as String? ?? '',
       );
 }
 

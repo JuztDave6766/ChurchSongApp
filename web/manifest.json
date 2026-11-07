@@ -1,11 +1,11 @@
 {
-    "name": "church_song_app",
-    "short_name": "church_song_app",
+    "name": "Canti Liturgici — ChurchSongApp",
+    "short_name": "Canti Liturgici",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FBF7EF",
+    "theme_color": "#4B3F72",
+    "description": "Canzoniere liturgico con scalette, modalità celebrazione, letture domenicali e stampa A4.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

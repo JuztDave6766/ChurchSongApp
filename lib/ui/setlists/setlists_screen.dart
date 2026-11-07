@@ -134,45 +134,33 @@ class SetlistsScreen extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 36),
           children: [
             const SizedBox(height: 10),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Text(
+              strings.setlistsTitle,
+              style: Theme.of(context).textTheme.displaySmall,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              strings.setlistsSubtitle,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 14),
+            Wrap(
+              spacing: 10,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        strings.setlistsTitle,
-                        style: Theme.of(context).textTheme.displaySmall,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        strings.setlistsSubtitle,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: scheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ),
+                OutlinedButton.icon(
+                  onPressed: () => _fromTemplate(context),
+                  icon: const Icon(Icons.diamond_outlined, size: 18),
+                  label: Text(strings.fromTemplate),
                 ),
-                const SizedBox(width: 12),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: () => _fromTemplate(context),
-                      icon: const Icon(Icons.diamond_outlined, size: 18),
-                      label: Text(strings.fromTemplate),
-                    ),
-                    FilledButton.icon(
-                      onPressed: () => _newSetlist(context),
-                      icon: const Icon(Icons.add_rounded, size: 19),
-                      label: Text(strings.newSetlist),
-                    ),
-                  ],
+                FilledButton.icon(
+                  onPressed: () => _newSetlist(context),
+                  icon: const Icon(Icons.add_rounded, size: 19),
+                  label: Text(strings.newSetlist),
                 ),
               ],
             ),

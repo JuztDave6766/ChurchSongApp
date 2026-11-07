@@ -65,6 +65,32 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: scheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.public_rounded,
+                        size: 12,
+                        color: scheme.onSecondaryContainer,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        strings.demoBadge,
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: scheme.onSecondaryContainer,
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 30),
@@ -108,6 +134,11 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ],
+            ),
+            const SizedBox(height: 22),
+            _LocalDataBanner(
+              title: strings.localDataTitle,
+              body: strings.localDataBody,
             ),
             const SizedBox(height: 30),
             SectionHeader(
@@ -334,6 +365,43 @@ class _SetlistPreview extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _LocalDataBanner extends StatelessWidget {
+  const _LocalDataBanner({required this.title, required this.body});
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: scheme.tertiaryContainer.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: scheme.tertiaryContainer),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.lock_outline_rounded, size: 19, color: scheme.tertiary),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 2),
+                Text(body, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

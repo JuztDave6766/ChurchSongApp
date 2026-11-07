@@ -5,11 +5,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/library_controller.dart';
-import '../../data/settings_controller.dart';
 import '../../data/youtube_service.dart';
 import '../../domain/models.dart';
 import '../library/song_editor_screen.dart';
-import 'premium.dart';
+import '../library/song_print_screen.dart';
+import 'chord_text.dart';
 import 'tag_pill.dart';
 
 Future<void> showSongSheet(BuildContext context, Song song) {
@@ -17,25 +17,26 @@ Future<void> showSongSheet(BuildContext context, Song song) {
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => _SongSheet(song: song),
+    builder: (_) => _SongSheet(songId: song.id),
   );
 }
 
 class _SongSheet extends StatelessWidget {
-  const _SongSheet({required this.song});
+  const _SongSheet({required this.songId});
 
-  final Song song;
+  final String songId;
 
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final library = context.watch<LibraryController>();
-    final settings = context.watch<SettingsController>();
+    final song = library.songById(songId);
+    if (song == null) return const SizedBox.shrink();
+
     final scheme = Theme.of(context).colorScheme;
     final tags = library.tagsFor(song);
     final isFavorite = library.isFavorite(song.id);
-    final isDownloaded = library.isDownloaded(song.id);
-    final isDownloading = library.isDownloading(song.id);
+    final overridden = library.isOverridden(song.id);
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -61,6 +62,17 @@ class _SongSheet extends StatelessWidget {
                             song.title(strings.languageCode),
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
+                          if (song.version != null &&
+                              song.version!.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              song.version!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(color: scheme.secondary),
+                            ),
+                          ],
                           const SizedBox(height: 6),
                           Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
@@ -77,11 +89,10 @@ class _SongSheet extends StatelessWidget {
                                   icon: Icons.music_note_rounded,
                                   label: song.keySignature!,
                                 ),
-                              if (song.duration != null)
+                              if (overridden)
                                 _Meta(
-                                  icon: Icons.schedule_rounded,
-                                  label:
-                                      strings.minutesShort(song.duration!.inMinutes),
+                                  icon: Icons.edit_note_rounded,
+                                  label: strings.locallyEdited,
                                 ),
                             ],
                           ),
@@ -117,21 +128,6 @@ class _SongSheet extends StatelessWidget {
                   ],
                 ),
               ),
-              if (song.youtubeId != null && song.youtubeId!.isNotEmpty) ...[
-                const SizedBox(height: 14),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-                  child: _YoutubePreview(videoId: song.youtubeId!),
-                ),
-              ],
-              if (song.sheetUrl != null && song.sheetUrl!.isNotEmpty &&
-                  song.youtubeId == null) ...[
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-                  child: _SheetLink(url: song.sheetUrl!),
-                ),
-              ],
               const SizedBox(height: 14),
               const Divider(height: 1),
               Flexible(
@@ -148,10 +144,10 @@ class _SongSheet extends StatelessWidget {
                           style: Theme.of(context).textTheme.labelMedium,
                         ),
                         const SizedBox(height: 12),
-                        ..._lyrics(context),
-                        if (song.license == SongLicense.personalUse &&
-                            song.sourceNote != null) ...[
-                          const SizedBox(height: 4),
+                        ..._lyrics(context, song),
+                        if (song.sourceNote != null &&
+                            song.sourceNote!.isNotEmpty) ...[
+                          const SizedBox(height: 10),
                           Text(
                             '${strings.personalSourceLabel}: ${song.sourceNote}',
                             style: Theme.of(context)
@@ -159,24 +155,13 @@ class _SongSheet extends StatelessWidget {
                                 .bodySmall
                                 ?.copyWith(color: scheme.onSurfaceVariant),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                         ],
                         if (song.sheetUrl != null &&
                             song.sheetUrl!.isNotEmpty) ...[
                           const SizedBox(height: 10),
                           _SheetLink(url: song.sheetUrl!),
                         ],
-                        const SizedBox(height: 8),
-                        Text(
-                          strings.audioDemoNotice,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(
-                                color: scheme.onSurfaceVariant,
-                                fontStyle: FontStyle.italic,
-                              ),
-                        ),
                       ],
                     ],
                   ),
@@ -188,9 +173,8 @@ class _SongSheet extends StatelessWidget {
                   border: Border(top: BorderSide(color: scheme.outlineVariant)),
                 ),
                 child: Wrap(
-                  spacing: 12,
+                  spacing: 10,
                   runSpacing: 10,
-                  alignment: WrapAlignment.spaceBetween,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     OutlinedButton.icon(
@@ -203,69 +187,42 @@ class _SongSheet extends StatelessWidget {
                         color: isFavorite ? scheme.secondary : null,
                       ),
                       label: Text(
-                        isFavorite ? strings.favoriteRemoved : strings.favoritesOnly,
+                        isFavorite
+                            ? strings.favoriteRemoved
+                            : strings.favoritesOnly,
                       ),
                     ),
-                    _DownloadAction(
-                      song: song,
-                      isDownloaded: isDownloaded,
-                      isDownloading: isDownloading,
-                      premium: settings.premiumUnlocked,
-                      onDownload: () async {
-                        if (!await ensurePremium(context)) return;
-                        await library.downloadSong(song);
-                      },
-                      onRemove: () => library.removeDownload(song),
+                    OutlinedButton.icon(
+                      onPressed: () => _edit(context, song),
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: Text(strings.editSong),
                     ),
-                    if (song.isUserSong) ...[
-                      OutlinedButton.icon(
-                        onPressed: () async {
-                          final closed = await Navigator.of(context).push<bool>(
-                            MaterialPageRoute<bool>(
-                              builder: (_) =>
-                                  SongEditorScreen(existing: song),
-                            ),
-                          );
-                          if (closed == true && context.mounted) {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                        icon: const Icon(Icons.edit_outlined, size: 18),
-                        label: Text(strings.editSong),
+                    OutlinedButton.icon(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => SongPrintScreen(songId: song.id),
+                        ),
                       ),
+                      icon: const Icon(Icons.print_outlined, size: 18),
+                      label: Text(strings.printSong),
+                    ),
+                    _TrackAction(song: song),
+                    if (overridden)
+                      TextButton.icon(
+                        onPressed: () => library.resetOverride(song.id),
+                        icon: const Icon(Icons.restart_alt_rounded, size: 18),
+                        label: Text(strings.restoreOriginal),
+                      ),
+                    if (song.isUserSong)
                       IconButton(
                         tooltip: strings.deleteSong,
-                        onPressed: () async {
-                          final confirmed = await showDialog<bool>(
-                            context: context,
-                            builder: (dialogContext) => AlertDialog(
-                              title: Text(strings.deleteSong),
-                              content: Text(strings.deleteSongQuestion),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(dialogContext)
-                                      .pop(false),
-                                  child: Text(AppStrings.of(context).cancel),
-                                ),
-                               FilledButton(
-                                  onPressed: () => Navigator.of(dialogContext)
-                                      .pop(true),
-                                  child: Text(strings.delete),
-                                ),
-                              ],
-                            ),
-                          );
-                          if (confirmed == true) {
-                            await library.deleteUserSong(song.id);
-                          }
-                        },
+                        onPressed: () => _delete(context, song),
                         icon: Icon(
                           Icons.delete_outline_rounded,
                           size: 19,
                           color: scheme.error,
                         ),
                       ),
-                    ],
                   ],
                 ),
               ),
@@ -276,7 +233,42 @@ class _SongSheet extends StatelessWidget {
     );
   }
 
-  List<Widget> _lyrics(BuildContext context) {
+  Future<void> _edit(BuildContext context, Song song) async {
+    await Navigator.of(context).push<Song>(
+      MaterialPageRoute<Song>(
+        builder: (_) => SongEditorScreen(existing: song),
+      ),
+    );
+    if (context.mounted) Navigator.of(context).pop();
+  }
+
+  Future<void> _delete(BuildContext context, Song song) async {
+    final strings = AppStrings.of(context);
+    final library = context.read<LibraryController>();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(strings.deleteSong),
+        content: Text(strings.deleteSongQuestion),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(strings.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(strings.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await library.deleteUserSong(song.id);
+      if (context.mounted) Navigator.of(context).pop();
+    }
+  }
+
+  List<Widget> _lyrics(BuildContext context, Song song) {
     final strings = AppStrings.of(context);
     final scheme = Theme.of(context).colorScheme;
     final widgets = <Widget>[];
@@ -303,8 +295,8 @@ class _SongSheet extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 6),
-              Text(
-                section.text,
+              ChordProText(
+                text: section.text,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       height: 1.65,
                       fontSize: 16.5,
@@ -319,131 +311,42 @@ class _SongSheet extends StatelessWidget {
   }
 }
 
-class _DownloadAction extends StatelessWidget {
-  const _DownloadAction({
-    required this.song,
-    required this.isDownloaded,
-    required this.isDownloading,
-    required this.premium,
-    required this.onDownload,
-    required this.onRemove,
-  });
+/// Opens a verified video when available, otherwise searches YouTube.
+class _TrackAction extends StatelessWidget {
+  const _TrackAction({required this.song});
 
   final Song song;
-  final bool isDownloaded;
-  final bool isDownloading;
-  final bool premium;
-  final Future<void> Function() onDownload;
-  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
-    final scheme = Theme.of(context).colorScheme;
 
-    if (isDownloading) {
-      return const SizedBox(
-        height: 24,
-        width: 24,
-        child: CircularProgressIndicator(strokeWidth: 2.4),
-      );
-    }
-
-    if (isDownloaded) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.offline_pin_rounded, size: 18, color: scheme.tertiary),
-          const SizedBox(width: 6),
-          Text(
-            strings.downloaded,
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(color: scheme.tertiary),
-          ),
-          IconButton(
-            tooltip: strings.remove,
-            onPressed: onRemove,
-            icon: const Icon(Icons.delete_outline_rounded, size: 19),
-          ),
-        ],
-      );
-    }
-
-    return FilledButton.icon(
-      onPressed: onDownload,
-      icon: Icon(
-        premium ? Icons.download_rounded : Icons.workspace_premium_rounded,
-        size: 18,
-      ),
-      label: Text(strings.download),
-    );
-  }
-}
-
-/// Tap-to-play YouTube preview: a thumbnail with a play badge; opens the
-/// video in an external browser/application.
-class _YoutubePreview extends StatelessWidget {
-  const _YoutubePreview({required this.videoId});
-
-  final String videoId;
-
-  @override
-  Widget build(BuildContext context) {
-    final strings = AppStrings.of(context);
-    final scheme = Theme.of(context).colorScheme;
-
-    return Material(
-      color: scheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: () async {
-          final url = YouTubeService.watchUrl(videoId);
+    if (song.youtubeId != null && song.youtubeId!.isNotEmpty) {
+      return FilledButton.icon(
+        onPressed: () async {
+          final url = YouTubeService.watchUrl(song.youtubeId!);
           if (await canLaunchUrl(url)) {
             await launchUrl(url, mode: LaunchMode.externalApplication);
           }
         },
-        borderRadius: BorderRadius.circular(16),
-        child: SizedBox(
-          height: 92,
-          child: Row(
-            children: [
-              const SizedBox(width: 14),
-              Icon(
-                Icons.play_circle_fill_rounded,
-                size: 44,
-                color: scheme.error.withValues(alpha: 0.85),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      strings.youtubeLabel,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    Text(
-                      strings.watchOnYoutube,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(
-                            color: scheme.onSurfaceVariant,
-                            fontStyle: FontStyle.italic,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right_rounded, size: 22),
-              const SizedBox(width: 12),
-            ],
-          ),
-        ),
-      ),
+        icon: const Icon(Icons.play_circle_fill_rounded, size: 18),
+        label: Text(strings.watchOnYoutube),
+      );
+    }
+
+    return OutlinedButton.icon(
+      onPressed: () async {
+        final query = [song.title('it'), song.author]
+            .whereType<String>()
+            .where((part) => part.trim().isNotEmpty)
+            .join(' ');
+        final url = YouTubeService.searchUrl(query);
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        }
+      },
+      icon: const Icon(Icons.search_rounded, size: 18),
+      label: Text(strings.searchOnYoutube),
     );
   }
 }
@@ -521,7 +424,8 @@ class _CopyrightNotice extends StatelessWidget {
   }
 }
 
-class _Meta extends StatelessWidget {  const _Meta({required this.icon, required this.label});
+class _Meta extends StatelessWidget {
+  const _Meta({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -534,12 +438,16 @@ class _Meta extends StatelessWidget {  const _Meta({required this.icon, required
       children: [
         Icon(icon, size: 15, color: AppColors.gold),
         const SizedBox(width: 5),
-        Text(
-          label,
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(color: scheme.onSurfaceVariant),
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: scheme.onSurfaceVariant),
+          ),
         ),
       ],
     );

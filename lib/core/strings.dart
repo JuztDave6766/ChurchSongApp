@@ -232,6 +232,32 @@ abstract class AppStrings {
   String get resetDataQuestion;
   String get reset;
   String get dataReset;
+
+  // Public demo, chords, print, backup and credits.
+  String get demoBadge;
+  String get localDataTitle;
+  String get localDataBody;
+  String get versionField;
+  String get chordProHint;
+  String get printSong;
+  String get printHint;
+  String get closePrint;
+  String get searchOnYoutube;
+  String get locallyEdited;
+  String get restoreOriginal;
+  String get backupTitle;
+  String get backupDescription;
+  String get exportData;
+  String get importData;
+  String get backupExported;
+  String get backupImported;
+  String get backupInvalid;
+  String get copyData;
+  String get pasteData;
+  String get creditsTitle;
+  String get creditsBody;
+  String get openCredits;
+  String get takedown;
 }
 
 class AppStringsIt extends AppStrings {
@@ -402,7 +428,7 @@ class AppStringsIt extends AppStrings {
   @override
   String get textSectionsHint =>
       'Una strofa per blocco, separata da una riga vuota. Scrivi "R:" in '
-      'prima riga per un ritornello.';
+      'prima riga per un ritornello. Accordi inline: [Re]Alzo gli occhi.';
   @override
   String get youtubeIdField => 'ID video YouTube';
   @override
@@ -425,7 +451,7 @@ class AppStringsIt extends AppStrings {
   String get sundaysCardTitle => 'Letture del giorno';
   @override
   String get sundaysCardHint =>
-      'Letture domenicale (ciclo B) e canti suggeriti a tema.';
+      'Letture domenicali (Anno A, Avvento 2025 – Cristo Re 2026) e canti suggeriti a tema.';
   @override
   String get firstReading => 'Prima lettura';
   @override
@@ -446,8 +472,8 @@ class AppStringsIt extends AppStrings {
   String get createSundaySetlist => 'Crea una scaletta a tema';
   @override
   String get sundayNoData =>
-      'Le letture di questa domenica non sono presenti nella demo del '
-      'calendario (ciclo B: Avvento 2025 – Cristo Re 2026).';
+      'Le letture di questa domenica non sono presenti nel calendario '
+      'verificato della demo (Anno A: Avvento 2025 – Cristo Re 2026).';
 
   @override
   String get fromTemplate => 'Da modello';
@@ -669,6 +695,68 @@ class AppStringsIt extends AppStrings {
   String get reset => 'Ripristina';
   @override
   String get dataReset => 'Dati ripristinati';
+
+  @override
+  String get demoBadge => 'Demo pubblica';
+  @override
+  String get localDataTitle => 'I tuoi dati restano in questo browser';
+  @override
+  String get localDataBody =>
+      'La demo non ha account né sincronizzazione. Preferiti, modifiche e '
+      'scalette sono salvati solo su questo dispositivo: esportali prima di '
+      'cambiare browser o ripristinare la demo.';
+  @override
+  String get versionField => 'Versione / autore della musica';
+  @override
+  String get chordProHint =>
+      'Accordi inline sopra la sillaba: [Re]Alzo gli occhi verso i [Sim]monti. '
+      'Una strofa per blocco, separata da una riga vuota; "R:" per il '
+      'ritornello.';
+  @override
+  String get printSong => 'Stampa';
+  @override
+  String get printHint =>
+      'Foglio A4 pronto per la stampa: titolo, autore, fonte, accordi e testo.';
+  @override
+  String get closePrint => 'Chiudi';
+  @override
+  String get searchOnYoutube => 'Cerca su YouTube';
+  @override
+  String get locallyEdited => 'Modificato localmente';
+  @override
+  String get restoreOriginal => 'Ripristina originale';
+  @override
+  String get backupTitle => 'Backup e ripristino';
+  @override
+  String get backupDescription =>
+      'Esporta preferiti, modifiche, canti creati e scalette in un file JSON. '
+      'Importalo su un altro browser o dopo un ripristino.';
+  @override
+  String get exportData => 'Esporta dati';
+  @override
+  String get importData => 'Importa dati';
+  @override
+  String get backupExported => 'Backup esportato';
+  @override
+  String get backupImported => 'Backup importato';
+  @override
+  String get backupInvalid => 'Il file non è un backup valido';
+  @override
+  String get copyData => 'Copia';
+  @override
+  String get pasteData => 'Incolla il JSON';
+  @override
+  String get creditsTitle => 'Crediti e licenze';
+  @override
+  String get creditsBody =>
+      'Il codice dell\'app è distribuito con licenza MIT. I testi e gli '
+      'accordi provengono dai canzonieri indicati in ogni scheda e sono '
+      'pubblicati su licenza dichiarata dal curatore della demo. Per '
+      'richieste di rimozione apri una segnalazione su GitHub Issues.';
+  @override
+  String get openCredits => 'Apri i crediti';
+  @override
+  String get takedown => 'Segnala un problema di copyright';
 }
 
 class AppStringsEn extends AppStrings {
@@ -839,7 +927,7 @@ class AppStringsEn extends AppStrings {
   @override
   String get textSectionsHint =>
       'One verse per block, separated by a blank line. Write "R:" on the '
-      'first line for a chorus.';
+      'first line for a chorus. Inline chords: [D]I lift up my eyes.';
   @override
   String get youtubeIdField => 'YouTube video id';
   @override
@@ -862,7 +950,7 @@ class AppStringsEn extends AppStrings {
   String get sundaysCardTitle => "Today's readings";
   @override
   String get sundaysCardHint =>
-      'Sunday readings (Year B) with themed song suggestions.';
+      'Sunday readings (Year A, Advent 2025 – Christ the King 2026) with themed song suggestions.';
   @override
   String get firstReading => 'First reading';
   @override
@@ -883,8 +971,8 @@ class AppStringsEn extends AppStrings {
   String get createSundaySetlist => 'Create a themed setlist';
   @override
   String get sundayNoData =>
-      'The readings for this Sunday are not in the demo calendar '
-      '(Year B: Advent 2025 – Christ the King 2026).';
+      'The readings for this Sunday are not in the demo\'s verified '
+      'calendar (Year A: Advent 2025 – Christ the King 2026).';
 
   @override
   String get fromTemplate => 'From template';
@@ -1106,6 +1194,67 @@ class AppStringsEn extends AppStrings {
   String get reset => 'Restore';
   @override
   String get dataReset => 'Data restored';
+
+  @override
+  String get demoBadge => 'Public demo';
+  @override
+  String get localDataTitle => 'Your data stays in this browser';
+  @override
+  String get localDataBody =>
+      'The demo has no accounts and no sync. Favourites, edits and setlists '
+      'are stored only on this device: export them before changing browser '
+      'or resetting the demo.';
+  @override
+  String get versionField => 'Version / music author';
+  @override
+  String get chordProHint =>
+      'Inline chords above the syllable: [D]I lift up my eyes to the [Bm]hills. '
+      'One verse per block, separated by a blank line; "R:" for the chorus.';
+  @override
+  String get printSong => 'Print';
+  @override
+  String get printHint =>
+      'A4 sheet ready to print: title, author, source, chords and lyrics.';
+  @override
+  String get closePrint => 'Close';
+  @override
+  String get searchOnYoutube => 'Search on YouTube';
+  @override
+  String get locallyEdited => 'Locally edited';
+  @override
+  String get restoreOriginal => 'Restore original';
+  @override
+  String get backupTitle => 'Backup and restore';
+  @override
+  String get backupDescription =>
+      'Export favourites, edits, created songs and setlists to a JSON file. '
+      'Import it in another browser or after a reset.';
+  @override
+  String get exportData => 'Export data';
+  @override
+  String get importData => 'Import data';
+  @override
+  String get backupExported => 'Backup exported';
+  @override
+  String get backupImported => 'Backup imported';
+  @override
+  String get backupInvalid => 'This is not a valid backup file';
+  @override
+  String get copyData => 'Copy';
+  @override
+  String get pasteData => 'Paste the JSON';
+  @override
+  String get creditsTitle => 'Credits and licences';
+  @override
+  String get creditsBody =>
+      'The app code is released under the MIT licence. Lyrics and chords come '
+      'from the songbooks named on each song and are published under the '
+      'licence declared by the demo curator. For takedown requests, open a '
+      'GitHub Issue.';
+  @override
+  String get openCredits => 'Open credits';
+  @override
+  String get takedown => 'Report a copyright issue';
 }
 
 class AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

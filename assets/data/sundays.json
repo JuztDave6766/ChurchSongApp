@@ -1,0 +1,901 @@
+{
+  "cycle": "A",
+  "range": {
+    "from": "2025-11-30",
+    "to": "2026-11-22"
+  },
+  "note": "Letture domenicali dell'Anno A verificate sul calendario CEI. Le voci non verificate vengono nascoste dall'app.",
+  "source": "CEI – Liturgia del giorno (chiesacattolica.it)",
+  "verifiedAt": "2026-11-07",
+  "sundays": [
+    {
+      "date": "2025-11-30",
+      "titleIt": "1ª domenica di Avvento",
+      "titleEn": "First Sunday of Advent",
+      "firstReading": "Is 2,1-5",
+      "psalmCitation": "Sal 121 (122)",
+      "psalmResponse": "Andiamo con gioia incontro al Signore.",
+      "secondReading": "Rm 13,11-14a",
+      "gospel": "Mt 24,37-44",
+      "themeIds": [
+        "speranza",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20251130"
+    },
+    {
+      "date": "2025-12-07",
+      "titleIt": "2ª domenica di Avvento",
+      "titleEn": "Second Sunday of Advent",
+      "firstReading": "Is 11,1-10",
+      "psalmCitation": "Sal 71 (72)",
+      "psalmResponse": "Vieni, Signore, re di giustizia e di pace.",
+      "secondReading": "Rm 15,4-9",
+      "gospel": "Mt 3,1-12",
+      "themeIds": [
+        "penitenza",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20251207"
+    },
+    {
+      "date": "2025-12-14",
+      "titleIt": "3ª domenica di Avvento (Gaudete)",
+      "titleEn": "Third Sunday of Advent (Gaudete)",
+      "firstReading": "Is 35,1-6a.8a.10",
+      "psalmCitation": "Sal 145 (146)",
+      "psalmResponse": "Vieni, Signore, a salvarci.",
+      "secondReading": "Gc 5,7-10",
+      "gospel": "Mt 11,2-11",
+      "themeIds": [
+        "gioia",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20251214"
+    },
+    {
+      "date": "2025-12-21",
+      "titleIt": "4ª domenica di Avvento",
+      "titleEn": "Fourth Sunday of Advent",
+      "firstReading": "Is 7,10-14",
+      "psalmCitation": "Sal 23 (24)",
+      "psalmResponse": "Ecco, viene il Signore, re della gloria.",
+      "secondReading": "Rm 1,1-7",
+      "gospel": "Mt 1,18-24",
+      "themeIds": [
+        "fiducia",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20251221"
+    },
+    {
+      "date": "2025-12-28",
+      "titleIt": "Sacra Famiglia",
+      "titleEn": "Holy Family",
+      "firstReading": "Sir 3,3-7.14-17a",
+      "psalmCitation": "Sal 127 (128)",
+      "psalmResponse": "Beato chi teme il Signore e cammina nelle sue vie.",
+      "secondReading": "Col 3,12-21",
+      "gospel": "Mt 2,13-15.19-23",
+      "themeIds": [
+        "comunita",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20251228"
+    },
+    {
+      "date": "2026-01-04",
+      "titleIt": "2ª domenica dopo il Natale",
+      "titleEn": "Second Sunday after Christmas",
+      "firstReading": "Sir 24,1-4.12-16",
+      "psalmCitation": "Sal 147",
+      "psalmResponse": "Il Verbo si è fatto carne e ha posto la sua dimora in mezzo a noi.",
+      "secondReading": "Ef 1,3-6.15-18",
+      "gospel": "Gv 1,1-18",
+      "themeIds": [
+        "luce",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260104"
+    },
+    {
+      "date": "2026-01-11",
+      "titleIt": "Battesimo del Signore",
+      "titleEn": "Baptism of the Lord",
+      "firstReading": "Is 42,1-4.6-7",
+      "psalmCitation": "Sal 28 (29)",
+      "psalmResponse": "Il Signore benedirà il suo popolo con la pace.",
+      "secondReading": "At 10,34-38",
+      "gospel": "Mt 3,13-17",
+      "themeIds": [
+        "spirito-santo",
+        "luce"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260111"
+    },
+    {
+      "date": "2026-01-18",
+      "titleIt": "2ª domenica del Tempo ordinario",
+      "titleEn": "Second Sunday in Ordinary Time",
+      "firstReading": "Is 49,3.5-6",
+      "psalmCitation": "Sal 39 (40)",
+      "psalmResponse": "Ecco, Signore, io vengo per fare la tua volontà.",
+      "secondReading": "1Cor 1,1-3",
+      "gospel": "Gv 1,29-34",
+      "themeIds": [
+        "luce",
+        "comunita"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260118"
+    },
+    {
+      "date": "2026-01-25",
+      "titleIt": "3ª domenica del Tempo ordinario",
+      "titleEn": "Third Sunday in Ordinary Time",
+      "firstReading": "Is 8,23b.9,3",
+      "psalmCitation": "Sal 26 (27)",
+      "psalmResponse": "Il Signore è mia luce e mia salvezza.",
+      "secondReading": "1Cor 1,10-13.17",
+      "gospel": "Mt 4,12-23",
+      "themeIds": [
+        "speranza",
+        "luce"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260125"
+    },
+    {
+      "date": "2026-02-01",
+      "titleIt": "4ª domenica del Tempo ordinario",
+      "titleEn": "Fourth Sunday in Ordinary Time",
+      "firstReading": "Sof 2,3.3,12-13",
+      "psalmCitation": "Sal 145 (146)",
+      "psalmResponse": "Beati i poveri in spirito.",
+      "secondReading": "1Cor 1,26-31",
+      "gospel": "Mt 5,1-12a",
+      "themeIds": [
+        "gioia",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260201"
+    },
+    {
+      "date": "2026-02-08",
+      "titleIt": "5ª domenica del Tempo ordinario",
+      "titleEn": "Fifth Sunday in Ordinary Time",
+      "firstReading": "Is 58,7-10",
+      "psalmCitation": "Sal 111 (112)",
+      "psalmResponse": "Il giusto risplende come luce.",
+      "secondReading": "1Cor 2,1-5",
+      "gospel": "Mt 5,13-16",
+      "themeIds": [
+        "luce",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260208"
+    },
+    {
+      "date": "2026-02-15",
+      "titleIt": "6ª domenica del Tempo ordinario",
+      "titleEn": "Sixth Sunday in Ordinary Time",
+      "firstReading": "Sir 15,16-21",
+      "psalmCitation": "Sal 118 (119)",
+      "psalmResponse": "Beato chi cammina nella legge del Signore.",
+      "secondReading": "1Cor 2,6-10",
+      "gospel": "Mt 5,17-37",
+      "themeIds": [
+        "comunita",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260215"
+    },
+    {
+      "date": "2026-02-22",
+      "titleIt": "1ª domenica di Quaresima",
+      "titleEn": "First Sunday of Lent",
+      "firstReading": "Gen 2,7-9.3,1-7",
+      "psalmCitation": "Sal 50 (51)",
+      "psalmResponse": "Perdonaci, Signore: abbiamo peccato.",
+      "secondReading": "Rm 5,12-19",
+      "gospel": "Mt 4,1-11",
+      "themeIds": [
+        "penitenza",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260222"
+    },
+    {
+      "date": "2026-03-01",
+      "titleIt": "2ª domenica di Quaresima",
+      "titleEn": "Second Sunday of Lent",
+      "firstReading": "Gen 12,1-4a",
+      "psalmCitation": "Sal 32 (33)",
+      "psalmResponse": "Donaci, Signore, il tuo amore: in te speriamo.",
+      "secondReading": "2Tm 1,8b-10",
+      "gospel": "Mt 17,1-9",
+      "themeIds": [
+        "luce",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260301"
+    },
+    {
+      "date": "2026-03-08",
+      "titleIt": "3ª domenica di Quaresima",
+      "titleEn": "Third Sunday of Lent",
+      "firstReading": "Es 17,3-7",
+      "psalmCitation": "Sal 94 (95)",
+      "psalmResponse": "Ascoltate oggi la voce del Signore:",
+      "secondReading": "Rm 5,1-2.5-8",
+      "gospel": "Gv 4,5-42",
+      "themeIds": [
+        "speranza",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260308"
+    },
+    {
+      "date": "2026-03-15",
+      "titleIt": "4ª domenica di Quaresima",
+      "titleEn": "Fourth Sunday of Lent",
+      "firstReading": "1Sam 16,1b.4.6-7.10-13",
+      "psalmCitation": "Sal 22 (23)",
+      "psalmResponse": "Il Signore è il mio pastore: non manco di nulla.",
+      "secondReading": "Ef 5,8-14",
+      "gospel": "Gv 9,1-41",
+      "themeIds": [
+        "luce",
+        "gioia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260315"
+    },
+    {
+      "date": "2026-03-22",
+      "titleIt": "5ª domenica di Quaresima",
+      "titleEn": "Fifth Sunday of Lent",
+      "firstReading": "Ez 37,12-14",
+      "psalmCitation": "Sal 129 (130)",
+      "psalmResponse": "Il Signore è bontà e misericordia.",
+      "secondReading": "Rm 8,8-11",
+      "gospel": "Gv 11,1-45",
+      "themeIds": [
+        "speranza",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260322"
+    },
+    {
+      "date": "2026-03-29",
+      "titleIt": "Domenica delle Palme",
+      "titleEn": "Palm Sunday",
+      "firstReading": "Is 50,4-7",
+      "psalmCitation": "Sal 21 (22)",
+      "psalmResponse": "Dio mio, Dio mio, perché mi hai abbandonato?",
+      "secondReading": "Fil 2,6-11",
+      "gospel": "Mt 26,14 – 27,66",
+      "themeIds": [
+        "croce",
+        "penitenza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260329"
+    },
+    {
+      "date": "2026-04-05",
+      "titleIt": "Pasqua di Resurrezione",
+      "titleEn": "Easter Sunday",
+      "firstReading": "At 10,34a.37-43",
+      "psalmCitation": "Sal 117 (118)",
+      "psalmResponse": "Questo è il giorno che ha fatto il Signore: rallegriamoci ed esultiamo.",
+      "secondReading": "Col 3,1-4.1Cor 5,6b-8",
+      "gospel": "Gv 20,1-9",
+      "themeIds": [
+        "pasqua",
+        "gioia",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260405"
+    },
+    {
+      "date": "2026-04-12",
+      "titleIt": "2ª domenica di Pasqua (Divina Misericordia)",
+      "titleEn": "Second Sunday of Easter (Divine Mercy)",
+      "firstReading": "At 2,42-47",
+      "psalmCitation": "Sal 117 (118)",
+      "psalmResponse": "",
+      "secondReading": "1Pt 1,3-9",
+      "gospel": "Gv 20,19-31",
+      "themeIds": [
+        "pasqua",
+        "fiducia",
+        "pace"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260412"
+    },
+    {
+      "date": "2026-04-19",
+      "titleIt": "3ª domenica di Pasqua",
+      "titleEn": "Third Sunday of Easter",
+      "firstReading": "At 2,14a.22-33",
+      "psalmCitation": "Sal 15 (16)",
+      "psalmResponse": "Mostraci, Signore, il sentiero della vita.",
+      "secondReading": "1Pt 1,17-21",
+      "gospel": "Lc 24,13-35",
+      "themeIds": [
+        "pasqua",
+        "eucaristia",
+        "pace"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260419"
+    },
+    {
+      "date": "2026-04-26",
+      "titleIt": "4ª domenica di Pasqua",
+      "titleEn": "Fourth Sunday of Easter",
+      "firstReading": "At 2,14a.36-41",
+      "psalmCitation": "Sal 22 (23)",
+      "psalmResponse": "Il Signore è il mio pastore, non manco di nulla.",
+      "secondReading": "1Pt 2,20b-25",
+      "gospel": "Gv 10,1-10",
+      "themeIds": [
+        "pasqua",
+        "fiducia",
+        "comunita"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260426"
+    },
+    {
+      "date": "2026-05-03",
+      "titleIt": "5ª domenica di Pasqua",
+      "titleEn": "Fifth Sunday of Easter",
+      "firstReading": "At 6,1-7",
+      "psalmCitation": "Sal 32 (33)",
+      "psalmResponse": "Il tuo amore, Signore, sia su di noi: in te speriamo.",
+      "secondReading": "1Pt 2,4-9",
+      "gospel": "Gv 14,1-12",
+      "themeIds": [
+        "pasqua",
+        "comunita"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260503"
+    },
+    {
+      "date": "2026-05-10",
+      "titleIt": "6ª domenica di Pasqua",
+      "titleEn": "Sixth Sunday of Easter",
+      "firstReading": "At 8,5-8.14-17",
+      "psalmCitation": "Sal 65 (66)",
+      "psalmResponse": "Acclamate Dio, voi tutti della terra.",
+      "secondReading": "1Pt 3,15-18",
+      "gospel": "Gv 14,15-21",
+      "themeIds": [
+        "pasqua",
+        "pace"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260510"
+    },
+    {
+      "date": "2026-05-17",
+      "titleIt": "Ascensione del Signore",
+      "titleEn": "Ascension of the Lord",
+      "firstReading": "At 1,1-11",
+      "psalmCitation": "Sal 46 (47)",
+      "psalmResponse": "Ascende il Signore tra canti di gioia.",
+      "secondReading": "Ef 1,17-23",
+      "gospel": "Mt 28,16-20",
+      "themeIds": [
+        "pasqua",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260517"
+    },
+    {
+      "date": "2026-05-24",
+      "titleIt": "Pentecoste",
+      "titleEn": "Pentecost",
+      "firstReading": "At 2,1-11",
+      "psalmCitation": "Sal 103 (104)",
+      "psalmResponse": "Manda il tuo Spirito, Signore, a rinnovare la terra.",
+      "secondReading": "1Cor 12,3b-7.12-13",
+      "gospel": "Gv 20,19-23",
+      "themeIds": [
+        "pentecoste",
+        "spirito-santo",
+        "pace"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260524"
+    },
+    {
+      "date": "2026-05-31",
+      "titleIt": "Santissima Trinità",
+      "titleEn": "Most Holy Trinity",
+      "firstReading": "Es 34,4b-6.8-9",
+      "psalmCitation": "Dn 3,52-56",
+      "psalmResponse": "A te la lode e la gloria nei secoli.",
+      "secondReading": "2Cor 13,11-13",
+      "gospel": "Gv 3,16-18",
+      "themeIds": [
+        "comunita",
+        "gioia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260531"
+    },
+    {
+      "date": "2026-06-07",
+      "titleIt": "Corpus Domini",
+      "titleEn": "Corpus Christi",
+      "firstReading": "Dt 8,2-3.14b-16a",
+      "psalmCitation": "Sal 147",
+      "psalmResponse": "Loda il Signore, Gerusalemme.",
+      "secondReading": "1Cor 10,16-17",
+      "gospel": "Gv 6,51-58",
+      "themeIds": [
+        "eucaristia",
+        "comunita"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260607"
+    },
+    {
+      "date": "2026-06-14",
+      "titleIt": "11ª domenica del Tempo ordinario",
+      "titleEn": "Eleventh Sunday in Ordinary Time",
+      "firstReading": "Es 19,2-6a",
+      "psalmCitation": "Sal 99 (100)",
+      "psalmResponse": "Noi siamo suo popolo, gregge che egli guida.",
+      "secondReading": "Rm 5,6-11",
+      "gospel": "Mt 9,36.10,8",
+      "themeIds": [
+        "comunita",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260614"
+    },
+    {
+      "date": "2026-06-21",
+      "titleIt": "12ª domenica del Tempo ordinario",
+      "titleEn": "Twelfth Sunday in Ordinary Time",
+      "firstReading": "Ger 20,10-13",
+      "psalmCitation": "Sal 68 (69)",
+      "psalmResponse": "Nella tua grande bontà rispondimi, o Dio.",
+      "secondReading": "Rm 5,12-15",
+      "gospel": "Mt 10,26-33",
+      "themeIds": [
+        "fiducia",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260621"
+    },
+    {
+      "date": "2026-06-28",
+      "titleIt": "13ª domenica del Tempo ordinario",
+      "titleEn": "Thirteenth Sunday in Ordinary Time",
+      "firstReading": "At 3,1-10",
+      "psalmCitation": "Sal 18 (19)",
+      "psalmResponse": "Per tutta la terra si diffonde il loro annuncio.",
+      "secondReading": "Gal 1,11-20",
+      "gospel": "Gv 21,15-19",
+      "themeIds": [
+        "pace",
+        "comunita"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260628"
+    },
+    {
+      "date": "2026-07-05",
+      "titleIt": "14ª domenica del Tempo ordinario",
+      "titleEn": "Fourteenth Sunday in Ordinary Time",
+      "firstReading": "Zc 9,9-10",
+      "psalmCitation": "Sal 144 (145)",
+      "psalmResponse": "Benedirò il tuo nome per sempre, Signore.",
+      "secondReading": "Rm 8,9.11-13",
+      "gospel": "Mt 11,25-30",
+      "themeIds": [
+        "gioia",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260705"
+    },
+    {
+      "date": "2026-07-12",
+      "titleIt": "15ª domenica del Tempo ordinario",
+      "titleEn": "Fifteenth Sunday in Ordinary Time",
+      "firstReading": "Is 55,10-11",
+      "psalmCitation": "Sal 64 (65)",
+      "psalmResponse": "Tu visiti la terra, Signore, e benedici i suoi germogli.",
+      "secondReading": "Rm 8,18-23",
+      "gospel": "Mt 13,1-23",
+      "themeIds": [
+        "speranza",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260712"
+    },
+    {
+      "date": "2026-07-19",
+      "titleIt": "16ª domenica del Tempo ordinario",
+      "titleEn": "Sixteenth Sunday in Ordinary Time",
+      "firstReading": "Sap 12,13.16-19",
+      "psalmCitation": "Sal 85 (86)",
+      "psalmResponse": "Tu sei buono, Signore, e perdoni.",
+      "secondReading": "Rm 8,26-27",
+      "gospel": "Mt 13,24-43",
+      "themeIds": [
+        "speranza",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260719"
+    },
+    {
+      "date": "2026-07-26",
+      "titleIt": "17ª domenica del Tempo ordinario",
+      "titleEn": "Seventeenth Sunday in Ordinary Time",
+      "firstReading": "1Re 3,5.7-12",
+      "psalmCitation": "Sal 118 (119)",
+      "psalmResponse": "Quanto amo la tua legge, Signore!",
+      "secondReading": "Rm 8,28-30",
+      "gospel": "Mt 13,44-52",
+      "themeIds": [
+        "gioia",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260726"
+    },
+    {
+      "date": "2026-08-02",
+      "titleIt": "18ª domenica del Tempo ordinario",
+      "titleEn": "Eighteenth Sunday in Ordinary Time",
+      "firstReading": "Is 55,1-3",
+      "psalmCitation": "Sal 144 (145)",
+      "psalmResponse": "Apri la tua mano, Signore, e sazia ogni vivente.",
+      "secondReading": "Rm 8,35.37-39",
+      "gospel": "Mt 14,13-21",
+      "themeIds": [
+        "eucaristia",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260802"
+    },
+    {
+      "date": "2026-08-09",
+      "titleIt": "19ª domenica del Tempo ordinario",
+      "titleEn": "Nineteenth Sunday in Ordinary Time",
+      "firstReading": "1Re 19,9a.11-13a",
+      "psalmCitation": "Sal 84 (85)",
+      "psalmResponse": "Mostraci, Signore, la tua misericordia.",
+      "secondReading": "Rm 9,1-5",
+      "gospel": "Mt 14,22-33",
+      "themeIds": [
+        "fiducia",
+        "pace"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260809"
+    },
+    {
+      "date": "2026-08-16",
+      "titleIt": "20ª domenica del Tempo ordinario",
+      "titleEn": "Twentieth Sunday in Ordinary Time",
+      "firstReading": "Is 56,1.6-7",
+      "psalmCitation": "Sal 66 (67)",
+      "psalmResponse": "Popoli tutti, lodate il Signore.",
+      "secondReading": "Rm 11,13-15.29-32",
+      "gospel": "Mt 15,21-28",
+      "themeIds": [
+        "fiducia",
+        "comunita"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260816"
+    },
+    {
+      "date": "2026-08-23",
+      "titleIt": "21ª domenica del Tempo ordinario",
+      "titleEn": "Twenty-first Sunday in Ordinary Time",
+      "firstReading": "Is 22,19-23",
+      "psalmCitation": "Sal 137 (138)",
+      "psalmResponse": "Signore, il tuo amore è per sempre.",
+      "secondReading": "Rm 11,33-36",
+      "gospel": "Mt 16,13-20",
+      "themeIds": [
+        "fiducia",
+        "comunita"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260823"
+    },
+    {
+      "date": "2026-08-30",
+      "titleIt": "22ª domenica del Tempo ordinario",
+      "titleEn": "Twenty-second Sunday in Ordinary Time",
+      "firstReading": "Ger 20,7-9",
+      "psalmCitation": "Sal 62 (63)",
+      "psalmResponse": "Ha sete di te, Signore, l’anima mia.",
+      "secondReading": "Rm 12,1-2",
+      "gospel": "Mt 16,21-27",
+      "themeIds": [
+        "croce",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260830"
+    },
+    {
+      "date": "2026-09-06",
+      "titleIt": "23ª domenica del Tempo ordinario",
+      "titleEn": "Twenty-third Sunday in Ordinary Time",
+      "firstReading": "Ez 33,1.7-9",
+      "psalmCitation": "Sal 94 (95)",
+      "psalmResponse": "Ascoltate oggi la voce del Signore.",
+      "secondReading": "Rm 13,8-10",
+      "gospel": "Mt 18,15-20",
+      "themeIds": [
+        "comunita",
+        "penitenza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260906"
+    },
+    {
+      "date": "2026-09-13",
+      "titleIt": "24ª domenica del Tempo ordinario",
+      "titleEn": "Twenty-fourth Sunday in Ordinary Time",
+      "firstReading": "Sir 27,33.28,9",
+      "psalmCitation": "Sal 102 (103)",
+      "psalmResponse": "Il Signore è buono e grande nell’amore.",
+      "secondReading": "Rm 14,7-9",
+      "gospel": "Mt 18,21-35",
+      "themeIds": [
+        "penitenza",
+        "pace"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260913"
+    },
+    {
+      "date": "2026-09-20",
+      "titleIt": "25ª domenica del Tempo ordinario",
+      "titleEn": "Twenty-fifth Sunday in Ordinary Time",
+      "firstReading": "Is 55,6-9",
+      "psalmCitation": "Sal 144 (145)",
+      "psalmResponse": "Il Signore è vicino a chi lo invoca.",
+      "secondReading": "Fil 1,20c-24.27a",
+      "gospel": "Mt 20,1-16",
+      "themeIds": [
+        "gioia",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260920"
+    },
+    {
+      "date": "2026-09-27",
+      "titleIt": "26ª domenica del Tempo ordinario",
+      "titleEn": "Twenty-sixth Sunday in Ordinary Time",
+      "firstReading": "Ez 18,25-28",
+      "psalmCitation": "Sal 24 (25)",
+      "psalmResponse": "Ricòrdati, Signore, della tua misericordia.",
+      "secondReading": "Fil 2,1-11",
+      "gospel": "Mt 21,28-32",
+      "themeIds": [
+        "penitenza",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20260927"
+    },
+    {
+      "date": "2026-10-04",
+      "titleIt": "27ª domenica del Tempo ordinario",
+      "titleEn": "Twenty-seventh Sunday in Ordinary Time",
+      "firstReading": "Is 5,1-7",
+      "psalmCitation": "Sal 79 (80)",
+      "psalmResponse": "La vigna del Signore è la casa d’Israele.",
+      "secondReading": "Fil 4,6-9",
+      "gospel": "Mt 21,33-43",
+      "themeIds": [
+        "comunita",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20261004"
+    },
+    {
+      "date": "2026-10-11",
+      "titleIt": "28ª domenica del Tempo ordinario",
+      "titleEn": "Twenty-eighth Sunday in Ordinary Time",
+      "firstReading": "Is 25,6-10a",
+      "psalmCitation": "Sal 22 (23)",
+      "psalmResponse": "Abiterò per sempre nella casa del Signore.",
+      "secondReading": "Fil 4,12-14.19-20",
+      "gospel": "Mt 22,1-14",
+      "themeIds": [
+        "gioia",
+        "comunita"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20261011"
+    },
+    {
+      "date": "2026-10-18",
+      "titleIt": "29ª domenica del Tempo ordinario",
+      "titleEn": "Twenty-ninth Sunday in Ordinary Time",
+      "firstReading": "Is 45,1.4-6",
+      "psalmCitation": "Sal 95 (96)",
+      "psalmResponse": "Grande è il Signore e degno di ogni lode.",
+      "secondReading": "1Ts 1,1-5b",
+      "gospel": "Mt 22,15-21",
+      "themeIds": [
+        "comunita",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20261018"
+    },
+    {
+      "date": "2026-10-25",
+      "titleIt": "30ª domenica del Tempo ordinario",
+      "titleEn": "Thirtieth Sunday in Ordinary Time",
+      "firstReading": "Es 22,20-26",
+      "psalmCitation": "Sal 17 (18)",
+      "psalmResponse": "Ti amo, Signore, mia forza.",
+      "secondReading": "1Ts 1,5c-10",
+      "gospel": "Mt 22,34-40",
+      "themeIds": [
+        "comunita",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20261025"
+    },
+    {
+      "date": "2026-11-01",
+      "titleIt": "Ognissanti",
+      "titleEn": "All Saints",
+      "firstReading": "Ap 7,2-4.9-14",
+      "psalmCitation": "Sal 23 (24)",
+      "psalmResponse": "Ecco la generazione che cerca il tuo volto, Signore.",
+      "secondReading": "1Gv 3,1-3",
+      "gospel": "Mt 5,1-12a",
+      "themeIds": [
+        "gioia",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20261101"
+    },
+    {
+      "date": "2026-11-08",
+      "titleIt": "32ª domenica del Tempo ordinario",
+      "titleEn": "Thirty-second Sunday in Ordinary Time",
+      "firstReading": "Sap 6,12-16",
+      "psalmCitation": "Sal 62 (63)",
+      "psalmResponse": "Ha sete di te, Signore, l’anima mia.",
+      "secondReading": "1Ts 4,13-18.1Ts 4,13-14",
+      "gospel": "Mt 25,1-13",
+      "themeIds": [
+        "speranza",
+        "fiducia"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20261108"
+    },
+    {
+      "date": "2026-11-15",
+      "titleIt": "33ª domenica del Tempo ordinario",
+      "titleEn": "Thirty-third Sunday in Ordinary Time",
+      "firstReading": "Prv 31,10-13.19-20.30-31",
+      "psalmCitation": "Sal 127 (128)",
+      "psalmResponse": "Beato chi teme il Signore.",
+      "secondReading": "1Ts 5,1-6",
+      "gospel": "Mt 25,14-30",
+      "themeIds": [
+        "fiducia",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20261115"
+    },
+    {
+      "date": "2026-11-22",
+      "titleIt": "Cristo Re dell'universo",
+      "titleEn": "Christ the King",
+      "firstReading": "Ez 34,11-12.15-17",
+      "psalmCitation": "Sal 22 (23)",
+      "psalmResponse": "Il Signore è il mio pastore: non manco di nulla.",
+      "secondReading": "1Cor 15,20-26.28",
+      "gospel": "Mt 25,31-46",
+      "themeIds": [
+        "croce",
+        "speranza"
+      ],
+      "verified": true,
+      "source": "CEI – Liturgia del giorno",
+      "sourceUrl": "https://www.chiesacattolica.it/liturgia-del-giorno/?data-liturgia=20261122"
+    }
+  ]
+}

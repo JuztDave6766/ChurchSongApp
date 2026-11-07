@@ -251,6 +251,33 @@ KEYWORD_TAGS: list[tuple[tuple[str, ...], tuple[str, ...]]] = [
     (("defunt", "eterno riposo", "memoria"), ("defunti",)),
 ]
 
+# Tags that cannot be inferred from the PDFs but are stable for the
+# repertoire: the settings of the Via Crucis, the adoration songs and the
+# prayer meeting.  Keyed by the normalised title after deduplication.
+CURATED_TAGS: dict[str, tuple[str, ...]] = {
+    "canto della via crucis": ("via-crucis", "introduzione", "stazione", "conclusione"),
+    "signore, dolce volto": ("via-crucis", "stazione"),
+    "ti saluto, croce santa": ("via-crucis", "stazione"),
+    "crocifisso mio signor": ("via-crucis", "stazione"),
+    "adoriamo il sacramento": ("adorazione", "esposizione", "adorazione-momento"),
+    "adoro te": ("adorazione", "esposizione", "adorazione-momento"),
+    "adoro te devote": ("adorazione", "adorazione-momento"),
+    "tantum ergo": ("adorazione", "benedizione", "reposizione"),
+    "ave verum": ("adorazione", "adorazione-momento"),
+    "anima christi": ("adorazione", "silenzio", "adorazione-momento"),
+    "lauda sion": ("adorazione", "adorazione-momento"),
+    "jesu dulcis memoria": ("adorazione", "silenzio", "adorazione-momento"),
+    "alto e glorioso dio": ("adorazione", "adorazione-momento"),
+    "inni e canti": ("adorazione", "esposizione"),
+    "dio ti adorerò": ("adorazione", "adorazione-momento"),
+    "ave maria (verbum panis)": ("preghiera", "apertura", "intercessione"),
+    "salve regina": ("preghiera", "conclusione", "via-crucis"),
+    "magnificat": ("preghiera", "ascolto"),
+    "padre nostro": ("preghiera", "ascolto"),
+    "resta qui con noi": ("preghiera", "conclusione"),
+    "cantiamo te": ("preghiera", "apertura"),
+}
+
 MOMENT_HINTS = [
     (("agnello", "pane di vita", "cibo", "comunione"), "comunione"),
     (("gloria",), "gloria"),
@@ -810,6 +837,11 @@ def infer_tags(candidate: Candidate) -> list[str]:
             if any(key in haystack for key in keys):
                 tags.add(moment)
                 break
+    if "adorazione-momento" in tags:
+        tags.add("adorazione")
+    tags.update(
+        CURATED_TAGS.get(candidate.title.strip().lower(), ())
+    )
     return sorted(tags)
 
 

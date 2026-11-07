@@ -18,12 +18,42 @@ void main() {
       expect(song.title('fr'), 'Canto demo');
     });
 
+    test('builds a display title with the version', () {
+      const withVersion = Song(
+        id: 'v1',
+        titles: {'it': 'Santo'},
+        version: 'Gen Verde',
+        tagIds: ['messa'],
+      );
+      const withoutVersion = Song(
+        id: 'v2',
+        titles: {'it': 'Santo'},
+        tagIds: ['messa'],
+      );
+
+      expect(withVersion.displayTitle('it'), 'Santo · Gen Verde');
+      expect(withoutVersion.displayTitle('it'), 'Santo');
+    });
+
     test('matches tags', () {
       expect(song.hasTag('messa'), isTrue);
       expect(song.hasTag('gloria'), isFalse);
       expect(song.matchesAnyTag({'gloria', 'ingresso'}), isTrue);
       expect(song.matchesAnyTag({'gloria', 'santo'}), isFalse);
       expect(song.matchesAnyTag(const {}), isFalse);
+    });
+
+    test('round-trips the version and keeps it in copyWith', () {
+      final versioned = Song.fromJson({
+        'id': 'v3',
+        'titles': {'it': 'Kyrie'},
+        'version': 'Gen Rosso',
+        'tagIds': ['messa'],
+      });
+      expect(versioned.version, 'Gen Rosso');
+      expect(versioned.toJson()['version'], 'Gen Rosso');
+      expect(versioned.copyWith(version: 'Buttazzo').version, 'Buttazzo');
+      expect(versioned.copyWith().version, 'Gen Rosso');
     });
   });
 
@@ -99,21 +129,18 @@ void main() {
 
       expect(settings.languageCode, 'it');
       expect(settings.themeMode, 'system');
-      expect(settings.premiumUnlocked, isFalse);
     });
 
     test('round-trips through JSON', () {
       const settings = AppSettings(
         languageCode: 'en',
         themeMode: 'dark',
-        premiumUnlocked: true,
       );
 
       final restored = AppSettings.fromJson(settings.toJson());
 
       expect(restored.languageCode, 'en');
       expect(restored.themeMode, 'dark');
-      expect(restored.premiumUnlocked, isTrue);
     });
   });
 

@@ -21,7 +21,7 @@ void main() {
     expect(demo.id, 'sl_demo');
     expect(demo.name, 'Messa domenicale');
     expect(demo.functionId, 'messa');
-    expect(demo.songCount, 6);
+    expect(demo.songCount, 7);
     expect(demo.items.first.momentId, 'ingresso');
   });
 
@@ -33,7 +33,7 @@ void main() {
       name: 'Vespri',
       functionId: 'preghiera',
       items: const [
-        SetlistItem(id: 'si_a', songId: 'padre-nostro', momentId: 'apertura'),
+        SetlistItem(id: 'si_a', songId: 'ps_padre-nostro', momentId: 'apertura'),
       ],
     );
 
@@ -42,7 +42,7 @@ void main() {
 
     final reopened = SetlistController(store);
     expect(reopened.all, hasLength(2));
-    expect(reopened.byId(created.id)?.items.single.songId, 'padre-nostro');
+    expect(reopened.byId(created.id)?.items.single.songId, 'ps_padre-nostro');
   });
 
   test('updates an existing setlist and moves it to the top', () async {
@@ -55,7 +55,7 @@ void main() {
       demo.copyWith(
         name: 'Messa aggiornata',
         items: const [
-          SetlistItem(id: 'si_new', songId: 'santo-santo', momentId: 'santo'),
+          SetlistItem(id: 'si_new', songId: 'ps_santo', momentId: 'santo'),
         ],
       ),
     );

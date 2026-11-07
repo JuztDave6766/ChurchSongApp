@@ -261,7 +261,7 @@ class _MomentCard extends StatelessWidget {
   }
 }
 
-/// Sunday readings (Year B calendar) with themed song suggestions for the
+/// Sunday readings (verified Year A calendar) with themed song suggestions for the
 /// psalm, the alleluia verse and communion, plus one-tap setlist creation.
 class _SundayReadingsCard extends StatelessWidget {
   const _SundayReadingsCard();

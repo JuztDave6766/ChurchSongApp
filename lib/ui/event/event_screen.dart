@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/strings.dart';
+import '../../data/library_controller.dart';
 import '../../core/theme.dart';
 import '../../domain/catalog.dart';
 import '../../domain/models.dart';
+import '../shared/chord_text.dart';
 
 /// Immersive celebration mode.
 ///
@@ -43,8 +46,9 @@ class _EventScreenState extends State<EventScreen> {
   @override
   void initState() {
     super.initState();
+    final library = context.read<LibraryController>();
     _items = widget.setlist.items
-        .where((item) => kSongsById.containsKey(item.songId))
+        .where((item) => library.songById(item.songId) != null)
         .toList();
     _resetKeys();
     if (_items.isNotEmpty) {
@@ -60,8 +64,9 @@ class _EventScreenState extends State<EventScreen> {
     super.dispose();
   }
 
-  Song? get _currentSong =>
-      _items.isEmpty ? null : kSongsById[_items[_index].songId];
+  Song? get _currentSong => _items.isEmpty
+      ? null
+      : context.read<LibraryController>().songById(_items[_index].songId);
 
   List<SongSection> get _sections => _currentSong?.sections ?? const [];
 
@@ -412,6 +417,13 @@ class _EventScreenState extends State<EventScreen> {
                 style: const TextStyle(color: _muted, fontSize: 13.5),
               ),
             ],
+            if (song.version != null && song.version!.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Text(
+                song.version!,
+                style: const TextStyle(color: _dim, fontSize: 12.5),
+              ),
+            ],
             if (_presenting) ...[
               const SizedBox(height: 16),
               ClipRRect(
@@ -431,7 +443,9 @@ class _EventScreenState extends State<EventScreen> {
               const SizedBox(height: 20),
               _Upcoming(
                 moment: _momentLabelFor(_items[_index + 1], strings),
-                title: kSongsById[_items[_index + 1].songId]
+                title: context
+                        .read<LibraryController>()
+                        .songById(_items[_index + 1].songId)
                         ?.title(strings.languageCode) ??
                     '',
                 label: strings.upcoming,
@@ -501,13 +515,19 @@ class _EventScreenState extends State<EventScreen> {
               ),
             ),
             const SizedBox(height: 6),
-            Text(
-              section.text,
+            ChordProText(
+              text: section.text,
               style: TextStyle(
                 color: isCurrent ? _text : _muted,
                 fontSize: 17,
                 height: 1.65,
                 fontWeight: isCurrent ? FontWeight.w500 : FontWeight.w400,
+              ),
+              chordStyle: TextStyle(
+                color: isCurrent ? AppColors.goldSoft : _dim,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                height: 1.1,
               ),
             ),
           ],

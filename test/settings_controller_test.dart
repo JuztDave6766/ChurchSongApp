@@ -13,28 +13,25 @@ Future<LocalStore> _freshStore() async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('starts with Italian, system theme and premium locked', () async {
+  test('starts with Italian and the system theme', () async {
     final settings = SettingsController(await _freshStore());
 
     expect(settings.value.languageCode, 'it');
     expect(settings.locale, const Locale('it'));
     expect(settings.themeMode, ThemeMode.system);
-    expect(settings.premiumUnlocked, isFalse);
   });
 
-  test('persists language, theme and premium state', () async {
+  test('persists language and theme', () async {
     final store = await _freshStore();
     final settings = SettingsController(store);
 
     await settings.setLanguage('en');
     await settings.setThemeMode(ThemeMode.dark);
-    await settings.setPremiumUnlocked(true);
 
     final reopened = SettingsController(store);
     expect(reopened.value.languageCode, 'en');
     expect(reopened.locale, const Locale('en'));
     expect(reopened.themeMode, ThemeMode.dark);
-    expect(reopened.premiumUnlocked, isTrue);
   });
 
   test('ignores no-op updates without notifying', () async {
@@ -44,7 +41,6 @@ void main() {
 
     await settings.setLanguage('it');
     await settings.setThemeMode(ThemeMode.system);
-    await settings.setPremiumUnlocked(false);
 
     expect(notifications, 0);
   });
@@ -54,13 +50,11 @@ void main() {
     final settings = SettingsController(store);
     await settings.setLanguage('en');
     await settings.setThemeMode(ThemeMode.light);
-    await settings.setPremiumUnlocked(true);
 
     await settings.resetPreferences();
 
     expect(settings.value.languageCode, 'it');
     expect(settings.themeMode, ThemeMode.system);
-    expect(settings.premiumUnlocked, isFalse);
 
     final reopened = SettingsController(store);
     expect(reopened.value.languageCode, 'it');

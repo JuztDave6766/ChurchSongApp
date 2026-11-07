@@ -3,7 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:church_song_app/domain/catalog.dart';
 import 'package:church_song_app/domain/models.dart';
 
+import 'helpers.dart';
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  late List<Song> catalogue;
+
+  setUpAll(() async {
+    catalogue = await loadBundledCatalogue();
+  });
+
   group('catalog integrity', () {
     test('tag ids are unique', () {
       final ids = kTags.map((tag) => tag.id).toList();
@@ -16,12 +26,12 @@ void main() {
     });
 
     test('song ids are unique', () {
-      final ids = kSongs.map((song) => song.id).toList();
+      final ids = catalogue.map((song) => song.id).toList();
       expect(ids.toSet(), hasLength(ids.length));
     });
 
     test('every song tag exists in the catalogue', () {
-      for (final song in kSongs) {
+      for (final song in catalogue) {
         for (final tagId in song.tagIds) {
           expect(
             kTagsById.containsKey(tagId),
@@ -35,8 +45,8 @@ void main() {
     test('every function has at least one song for each required moment', () {
       for (final function in kFunctions) {
         for (final moment in function.moments) {
-          final songs = kSongs.where((song) => song.hasTag(moment.id));
           if (moment.optional) continue;
+          final songs = catalogue.where((song) => song.hasTag(moment.id));
           expect(
             songs,
             isNotEmpty,
@@ -58,29 +68,20 @@ void main() {
       }
     });
 
-    test('songs have at least one section and one tag', () {
-      for (final song in kSongs) {
-        if (song.license == SongLicense.copyrighted) {
-          // Protected repertoire ships metadata only, never bundled lyrics.
-          expect(song.sections, isEmpty, reason: song.id);
-          expect(
-            song.sourceNote != null ||
-                song.sheetUrl != null ||
-                song.youtubeId != null,
-            isTrue,
-            reason: '${song.id} has no source pointer',
-          );
-        } else {
-          expect(song.sections, isNotEmpty, reason: song.id);
-        }
+    test('songs carry text, a source note and at least one tag', () {
+      for (final song in catalogue) {
+        expect(song.sections, isNotEmpty, reason: song.id);
         expect(song.tagIds, isNotEmpty, reason: song.id);
+        expect(song.sourceNote, isNotEmpty, reason: song.id);
+        expect(song.license, SongLicense.personalUse, reason: song.id);
+        expect(song.titles['it'], isNotEmpty, reason: song.id);
       }
     });
 
     test('every function has at least one celebration song', () {
       for (final function in kFunctions) {
         expect(
-          kSongs.where((song) => song.hasTag(function.id)),
+          catalogue.where((song) => song.hasTag(function.id)),
           isNotEmpty,
           reason: function.id,
         );
@@ -96,6 +97,7 @@ void main() {
 
     test('every template references existing functions, moments and songs',
         () {
+      final songsById = {for (final song in catalogue) song.id: song};
       for (final template in kSetlistTemplates) {
         expect(
           kFunctionsById.containsKey(template.functionId),
@@ -109,17 +111,34 @@ void main() {
             reason: '${template.id} / ${entry.momentId}',
           );
           expect(
-            kSongsById.containsKey(entry.songId),
+            songsById.containsKey(entry.songId),
             isTrue,
             reason: '${template.id} / ${entry.songId}',
           );
           // The suggested song must belong to the template's function.
           expect(
-            kSongsById[entry.songId]!.hasTag(template.functionId),
+            songsById[entry.songId]!.hasTag(template.functionId),
             isTrue,
             reason: '${template.id} / ${entry.songId}',
           );
         }
+      }
+    });
+  });
+
+  group('demo setlist', () {
+    test('every id refers to a song in the bundled catalogue', () async {
+      final songs = {for (final song in catalogue) song.id};
+      for (final id in const [
+        'ps_cantiamo-te',
+        'ps_signore-pieta',
+        'ps_gloria',
+        'ps_accogli-i-nostri-doni',
+        'ps_santo',
+        'ps_agnello-di-dio',
+        'ps_io-saro-con-te',
+      ]) {
+        expect(songs, contains(id));
       }
     });
   });

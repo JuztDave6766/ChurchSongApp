@@ -17,6 +17,7 @@ Future<Map<String, dynamic>> _mockLoader() async => {
           'psalmResponse': "Se oggi ascoltate la sua voce, non irrigidite i vostri cuori.",
           'gospel': 'Mc 1,21-28',
           'themeIds': ['fiducia'],
+          'verified': true,
         },
         {
           'date': '2026-05-31',
@@ -24,6 +25,14 @@ Future<Map<String, dynamic>> _mockLoader() async => {
           'titleEn': 'Pentecost',
           'gospel': 'Gv 20,19-23',
           'themeIds': ['spirito-santo', 'pace'],
+          'verified': true,
+        },
+        {
+          'date': '2026-06-07',
+          'titleIt': 'Corpus Domini non verificato',
+          'titleEn': 'Unverified Corpus Christi',
+          'gospel': 'Gv 6,51-58',
+          'verified': false,
         },
       ],
     };
@@ -46,6 +55,7 @@ void main() {
 
     test('parses readings', () {
       expect(controller.sundays, hasLength(2));
+      expect(controller.sundays.map((s) => s.verified), everyElement(isTrue));
       expect(controller.loaded, isTrue);
       final first = controller.sundays.first;
       expect(first.date.year, 2026);
@@ -64,22 +74,47 @@ void main() {
       expect(sameDay!.title('it'), '4ª domenica del Tempo ordinario');
     });
 
-    test('falls back to the nearest future entry for unknown dates', () {
-      final unknown = controller.forDate(DateTime(2050, 1, 1));
+    test('falls back to the next entry before the calendar ends', () {
+      final unknown = controller.forDate(DateTime(2026, 2, 10));
       expect(unknown!.title('it'), 'Pentecoste');
+    });
+
+    test('returns null instead of stale readings after the calendar', () {
+      expect(controller.forDate(DateTime(2050, 1, 1)), isNull);
     });
   });
 
   group('suggestions (mocked library)', () {
     test('prioritises themed songs for psalm and alleluia', () async {
-      final library = LibraryController(store: await _freshStore());
-      await library.saveUserSong(
-        const Song(
-          id: 'us_psalm_test',
+      const catalogue = [
+        Song(
+          id: 'ps_psalm_test',
           titles: {'it': 'Mio salmo a tema'},
           tagIds: ['messa', 'salmo', 'fiducia'],
           sections: [SongSection(kind: SectionKind.response, text: 'R.')],
         ),
+        Song(
+          id: 'ps_alleluia_test',
+          titles: {'it': 'Alleluia di prova'},
+          tagIds: ['messa', 'versetto-alleluia', 'gioia'],
+          sections: [SongSection(kind: SectionKind.response, text: 'Alleluia')],
+        ),
+        Song(
+          id: 'ps_communion_test',
+          titles: {'it': 'Pane di prova'},
+          tagIds: ['messa', 'comunione'],
+          sections: [SongSection(kind: SectionKind.verse, text: 'Pane')],
+        ),
+        Song(
+          id: 'ps_closing_test',
+          titles: {'it': 'Andate in pace'},
+          tagIds: ['messa', 'congedo'],
+          sections: [SongSection(kind: SectionKind.verse, text: 'Andate')],
+        ),
+      ];
+      final library = LibraryController(
+        store: await _freshStore(),
+        catalogue: catalogue,
       );
 
       final sundays = SundaysController(loader: _mockLoader);

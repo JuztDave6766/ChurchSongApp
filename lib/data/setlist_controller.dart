@@ -96,6 +96,24 @@ class SetlistController extends ChangeNotifier {
     await _persist();
   }
 
+  Map<String, dynamic> toBackup() => {
+        'setlists': _setlists.map((setlist) => setlist.toJson()).toList(),
+      };
+
+  Future<void> restoreBackup(Map<String, dynamic> data) async {
+    _setlists
+      ..clear()
+      ..addAll(
+        (data['setlists'] as List<dynamic>? ?? const [])
+            .whereType<Map<String, dynamic>>()
+            .map(Setlist.fromJson),
+      );
+    _sort();
+    _initialised = true;
+    notifyListeners();
+    await _persist();
+  }
+
   Future<void> _persist() async {
     _initialised = true;
     await _store.writeList(
@@ -115,12 +133,13 @@ class SetlistController extends ChangeNotifier {
         createdAt: now,
         updatedAt: now,
         items: [
-          _item('ingresso', 'cantiamo-al-signore', 0),
-          _item('gloria', 'gloria-a-dio', 1),
-          _item('offertorio', 'tu-sei-la-luce', 2),
-          _item('santo', 'santo-santo', 3),
-          _item('comunione', 'pane-di-vita', 4),
-          _item('congedo', 'andate-in-pace', 5),
+          _item('ingresso', 'ps_cantiamo-te', 0),
+          _item('atto-penitenziale', 'ps_signore-pieta', 1),
+          _item('gloria', 'ps_gloria', 2),
+          _item('offertorio', 'ps_accogli-i-nostri-doni', 3),
+          _item('santo', 'ps_santo', 4),
+          _item('comunione', 'ps_agnello-di-dio', 5),
+          _item('congedo', 'ps_io-saro-con-te', 6),
         ],
       ),
     );

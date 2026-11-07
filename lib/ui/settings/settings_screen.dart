@@ -1,18 +1,23 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/strings.dart';
+import '../../data/backup_file.dart';
 import '../../data/library_controller.dart';
 import '../../data/setlist_controller.dart';
 import '../../data/settings_controller.dart';
 import '../shared/page_body.dart';
 import '../shared/section_header.dart';
-import '../shared/song_sheet.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   static const _version = '0.1.0';
+  static const _repo = 'https://github.com/JuztDave6766/ChurchSongApp';
 
   Future<void> _resetData(BuildContext context) async {
     final strings = AppStrings.of(context);
@@ -50,6 +55,212 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  Map<String, dynamic> _backupPayload(BuildContext context) {
+    final library = context.read<LibraryController>();
+    final setlists = context.read<SetlistController>();
+    final settings = context.read<SettingsController>();
+    return {
+      'app': 'ChurchSongApp',
+      'version': 1,
+      'exportedAt': DateTime.now().toIso8601String(),
+      'settings': settings.value.toJson(),
+      'library': library.toBackup(),
+      'setlists': setlists.toBackup(),
+    };
+  }
+
+  String _encodeBackup(BuildContext context) => const JsonEncoder.withIndent(
+        '  ',
+      ).convert(_backupPayload(context));
+
+  Future<void> _exportData(BuildContext context) async {
+    final strings = AppStrings.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final content = _encodeBackup(context);
+    final saved = await saveBackupFile(content, 'churchsong-backup.json');
+    if (saved) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(strings.backupExported)),
+      );
+      return;
+    }
+    // Non-web platforms: the backup is copied to the clipboard and shown so
+    // it can be saved manually.
+    await Clipboard.setData(ClipboardData(text: content));
+    if (!context.mounted) return;
+    messenger.showSnackBar(
+      SnackBar(content: Text('${strings.backupExported} · ${strings.copyData}')),
+    );
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(strings.exportData),
+        content: SizedBox(
+          width: 520,
+          child: SingleChildScrollView(
+            child: SelectableText(
+              content,
+              style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(strings.close),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _importData(BuildContext context) async {
+    final content = await pickBackupFile();
+    if (!context.mounted) return;
+    if (content != null) {
+      await _applyBackup(context, content);
+      return;
+    }
+    await _importFromDialog(context);
+  }
+
+  Future<void> _importFromDialog(BuildContext context) async {
+    final strings = AppStrings.of(context);
+    final controller = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(strings.importData),
+        content: SizedBox(
+          width: 520,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                strings.backupDescription,
+                style: Theme.of(dialogContext).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                minLines: 6,
+                maxLines: 12,
+                style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
+                decoration: InputDecoration(
+                  labelText: strings.pasteData,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              final data = await Clipboard.getData(Clipboard.kTextPlain);
+              if (data?.text != null) controller.text = data!.text!;
+            },
+            child: Text(strings.pasteData),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(strings.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(controller.text),
+            child: Text(strings.importData),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (result != null && result.trim().isNotEmpty && context.mounted) {
+      await _applyBackup(context, result);
+    }
+  }
+
+  Future<void> _applyBackup(BuildContext context, String content) async {
+    final strings = AppStrings.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final library = context.read<LibraryController>();
+    final setlists = context.read<SetlistController>();
+    final settings = context.read<SettingsController>();
+
+    try {
+      final decoded = jsonDecode(content);
+      if (decoded is! Map<String, dynamic> ||
+          decoded['app'] != 'ChurchSongApp') {
+        throw const FormatException();
+      }
+      final rawLibrary = decoded['library'];
+      final rawSetlists = decoded['setlists'];
+      if (rawLibrary is! Map<String, dynamic> ||
+          rawSetlists is! Map<String, dynamic>) {
+        throw const FormatException();
+      }
+      await library.restoreBackup(rawLibrary);
+      await setlists.restoreBackup(rawSetlists);
+      final rawSettings = decoded['settings'];
+      if (rawSettings is Map<String, dynamic>) {
+        final language = rawSettings['languageCode'];
+        final theme = rawSettings['themeMode'];
+        if (language is String) await settings.setLanguage(language);
+        if (theme is String) {
+          final mode = switch (theme) {
+            'light' => ThemeMode.light,
+            'dark' => ThemeMode.dark,
+            _ => ThemeMode.system,
+          };
+          await settings.setThemeMode(mode);
+        }
+      }
+      messenger.showSnackBar(
+        SnackBar(content: Text(strings.backupImported)),
+      );
+    } on Object {
+      messenger.showSnackBar(
+        SnackBar(content: Text(strings.backupInvalid)),
+      );
+    }
+  }
+
+  Future<void> _openUrl(BuildContext context, String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _showCredits(BuildContext context) async {
+    final strings = AppStrings.of(context);
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(strings.creditsTitle),
+        content: SizedBox(
+          width: 520,
+          child: SingleChildScrollView(
+            child: Text(
+              strings.creditsBody,
+              style: Theme.of(dialogContext).textTheme.bodyMedium,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(strings.close),
+          ),
+          TextButton(
+            onPressed: () => _openUrl(context, '$_repo/issues'),
+            child: Text(strings.takedown),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
@@ -65,9 +276,17 @@ class SettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 40),
           children: [
             const SizedBox(height: 10),
-            Text(
-              strings.settingsTitle,
-              style: Theme.of(context).textTheme.displaySmall,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    strings.settingsTitle,
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                ),
+                _DemoBadge(label: strings.demoBadge),
+              ],
             ),
             const SizedBox(height: 4),
             Text(
@@ -77,7 +296,13 @@ class SettingsScreen extends StatelessWidget {
                   .bodyMedium
                   ?.copyWith(color: scheme.onSurfaceVariant),
             ),
-            const SizedBox(height: 26),
+            const SizedBox(height: 22),
+
+            _LocalDataBanner(
+              title: strings.localDataTitle,
+              body: strings.localDataBody,
+            ),
+            const SizedBox(height: 22),
 
             _SettingsSection(
               title: strings.language,
@@ -116,7 +341,8 @@ class SettingsScreen extends StatelessWidget {
                     segments: [
                       ButtonSegment(
                         value: ThemeMode.system,
-                        icon: const Icon(Icons.brightness_auto_rounded, size: 18),
+                        icon:
+                            const Icon(Icons.brightness_auto_rounded, size: 18),
                         label: Text(strings.systemTheme),
                       ),
                       ButtonSegment(
@@ -139,210 +365,39 @@ class SettingsScreen extends StatelessWidget {
             ),
 
             _SettingsSection(
-              title: strings.premium,
-              child: Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      scheme.secondaryContainer,
-                      scheme.secondaryContainer.withValues(alpha: 0.55),
-                    ],
-                  ),
-                  border: Border.all(
-                    color: scheme.secondary.withValues(alpha: 0.25),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 44,
-                      width: 44,
-                      decoration: BoxDecoration(
-                        color: scheme.secondary.withValues(alpha: 0.16),
-                        borderRadius: BorderRadius.circular(13),
-                      ),
-                      child: Icon(
-                        Icons.workspace_premium_rounded,
-                        color: scheme.onSecondaryContainer,
-                        size: 23,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  settings.premiumUnlocked
-                                      ? strings.premiumActive
-                                      : strings.premiumInactive,
-                                  style: Theme.of(context).textTheme.titleMedium,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              if (settings.premiumUnlocked)
-                                Icon(
-                                  Icons.check_circle_rounded,
-                                  size: 16,
-                                  color: scheme.tertiary,
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            strings.premiumDescription,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(
-                                  color: scheme.onSecondaryContainer
-                                      .withValues(alpha: 0.8),
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Switch(
-                      value: settings.premiumUnlocked,
-                      onChanged: settings.setPremiumUnlocked,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            _SettingsSection(
-              title: strings.offline,
+              title: strings.backupTitle,
               child: _Card(
-                padding: EdgeInsets.zero,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
-                      child: Text(
-                        strings.offlineDescription,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
+                    Text(
+                      strings.backupDescription,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
-                      child: Row(
-                        children: [
-                          Icon(Icons.download_done_rounded,
-                              size: 17, color: scheme.tertiary),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${strings.downloadedSongs}: '
-                            '${library.downloadedSongs.length}',
-                            style: Theme.of(context).textTheme.labelLarge,
-                          ),
-                        ],
-                      ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${strings.songCount(library.songs.length)} · '
+                      '${strings.localDataTitle}',
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
-                    if (library.downloadedSongs.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
-                        child: Text(
-                          strings.noDownloads,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(fontStyle: FontStyle.italic),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        FilledButton.icon(
+                          onPressed: () => _exportData(context),
+                          icon: const Icon(Icons.file_download_outlined,
+                              size: 18),
+                          label: Text(strings.exportData),
                         ),
-                      )
-                    else ...[
-                      Divider(height: 1, color: scheme.outlineVariant),
-                      for (final song in library.downloadedSongs)
-                        Material(
-                          color: Colors.transparent,
-                          child: ListTile(
-                            dense: true,
-                            onTap: () => showSongSheet(context, song),
-                            leading: Icon(
-                              Icons.music_note_rounded,
-                              size: 19,
-                              color: scheme.secondary,
-                            ),
-                            title: Text(
-                              song.title(strings.languageCode),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              song.author ?? '',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: IconButton(
-                              tooltip: strings.removeDownload,
-                              onPressed: () => library.removeDownload(song),
-                              icon: Icon(
-                                Icons.delete_outline_rounded,
-                                size: 19,
-                                color: scheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
+                        OutlinedButton.icon(
+                          onPressed: () => _importData(context),
+                          icon: const Icon(Icons.file_upload_outlined,
+                              size: 18),
+                          label: Text(strings.importData),
                         ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-
-            _SettingsSection(
-              title: strings.youtubeLabel,
-              child: _YoutubeKeyCard(),
-            ),
-
-            _SettingsSection(
-              title: strings.sync,
-              child: _Card(
-                padding: const EdgeInsets.all(18),
-                child: Row(
-                  children: [
-                    Icon(Icons.cloud_queue_rounded,
-                        color: scheme.onSurfaceVariant),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            strings.sync,
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            strings.syncDescription,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: scheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        strings.syncComingSoon,
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
+                      ],
                     ),
                   ],
                 ),
@@ -352,7 +407,6 @@ class SettingsScreen extends StatelessWidget {
             _SettingsSection(
               title: strings.about,
               child: _Card(
-                padding: const EdgeInsets.all(18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -369,7 +423,7 @@ class SettingsScreen extends StatelessWidget {
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                               Text(
-                                '${strings.version} $_version',
+                                '${strings.version} $_version · ${strings.demoBadge}',
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
@@ -386,16 +440,32 @@ class SettingsScreen extends StatelessWidget {
                           ?.copyWith(color: scheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 16),
-                    OutlinedButton.icon(
-                      onPressed: () => _resetData(context),
-                      icon: const Icon(Icons.restart_alt_rounded, size: 18),
-                      label: Text(strings.resetData),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: scheme.error,
-                        side: BorderSide(
-                          color: scheme.error.withValues(alpha: 0.5),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => _showCredits(context),
+                          icon: const Icon(Icons.copyright_rounded, size: 18),
+                          label: Text(strings.openCredits),
                         ),
-                      ),
+                        OutlinedButton.icon(
+                          onPressed: () => _openUrl(context, '$_repo/issues'),
+                          icon: const Icon(Icons.flag_outlined, size: 18),
+                          label: Text(strings.takedown),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () => _resetData(context),
+                          icon: const Icon(Icons.restart_alt_rounded, size: 18),
+                          label: Text(strings.resetData),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: scheme.error,
+                            side: BorderSide(
+                              color: scheme.error.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -408,55 +478,76 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-class _YoutubeKeyCard extends StatefulWidget {
-  const _YoutubeKeyCard();
+class _DemoBadge extends StatelessWidget {
+  const _DemoBadge({required this.label});
 
-  @override
-  State<_YoutubeKeyCard> createState() => _YoutubeKeyCardState();
-}
-
-class _YoutubeKeyCardState extends State<_YoutubeKeyCard> {
-  late final TextEditingController _controller = TextEditingController(
-    text: context.read<SettingsController>().youtubeApiKey,
-  );
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    final settings = context.read<SettingsController>();
-    await settings.setYoutubeApiKey(_controller.text.trim());
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppStrings.of(context).keySaved)),
-    );
-  }
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    final strings = AppStrings.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+      decoration: BoxDecoration(
+        color: scheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: scheme.secondary.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.public_rounded, size: 13, color: scheme.onSecondaryContainer),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: scheme.onSecondaryContainer,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-    return _Card(
-      padding: const EdgeInsets.all(14),
-      child: Column(
+class _LocalDataBanner extends StatelessWidget {
+  const _LocalDataBanner({required this.title, required this.body});
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: scheme.tertiaryContainer.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: scheme.tertiaryContainer),
+      ),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            controller: _controller,
-            obscureText: true,
-            decoration: InputDecoration(
-              labelText: strings.youtubeApiKeyLabel,
-              helperText: strings.youtubeApiKeyHint,
+          Icon(Icons.lock_outline_rounded, size: 20, color: scheme.tertiary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  body,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 10),
-          OutlinedButton.icon(
-            onPressed: _save,
-            icon: const Icon(Icons.vpn_key_rounded, size: 18),
-            label: Text(strings.save),
           ),
         ],
       ),

@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../domain/models.dart';
 import 'local_store.dart';
 
-/// App-wide preferences: language, theme and premium state.
+/// App-wide preferences: language and theme.
+///
+/// The public demo has no accounts, no premium state and no API keys, so the
+/// only persisted settings are presentation choices.
 class SettingsController extends ChangeNotifier {
   SettingsController(this._store) {
     final raw = _store.readMap(_key);
@@ -27,17 +30,6 @@ class SettingsController extends ChangeNotifier {
         _ => ThemeMode.system,
       };
 
-  bool get premiumUnlocked => _settings.premiumUnlocked;
-
-  String get youtubeApiKey => _settings.youtubeApiKey;
-
-  Future<void> setYoutubeApiKey(String apiKey) async {
-    if (_settings.youtubeApiKey == apiKey) return;
-    _settings = _settings.copyWith(youtubeApiKey: apiKey);
-    notifyListeners();
-    await _persist();
-  }
-
   Future<void> setLanguage(String languageCode) async {
     if (_settings.languageCode == languageCode) return;
     _settings = _settings.copyWith(languageCode: languageCode);
@@ -53,13 +45,6 @@ class SettingsController extends ChangeNotifier {
     };
     if (_settings.themeMode == value) return;
     _settings = _settings.copyWith(themeMode: value);
-    notifyListeners();
-    await _persist();
-  }
-
-  Future<void> setPremiumUnlocked(bool unlocked) async {
-    if (_settings.premiumUnlocked == unlocked) return;
-    _settings = _settings.copyWith(premiumUnlocked: unlocked);
     notifyListeners();
     await _persist();
   }

@@ -6,7 +6,6 @@ import 'core/strings.dart';
 import 'core/theme.dart';
 import 'data/library_controller.dart';
 import 'data/local_store.dart';
-import 'data/services.dart';
 import 'data/setlist_controller.dart';
 import 'data/settings_controller.dart';
 import 'data/sundays_service.dart';
@@ -30,11 +29,10 @@ class ChurchSongApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SettingsController(store)),
         ChangeNotifierProvider(
           create: (_) =>
-              LibraryController(store: store, extraSongs: personalSongs),
+              LibraryController(store: store, catalogue: personalSongs),
         ),
         ChangeNotifierProvider(create: (_) => SetlistController(store)),
         ChangeNotifierProvider(create: (_) => SundaysController()),
-        Provider<SyncService>(create: (_) => LocalOnlySyncService()),
       ],
       child: const _App(),
     );

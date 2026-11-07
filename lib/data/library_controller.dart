@@ -3,34 +3,35 @@ import 'package:flutter/foundation.dart';
 import '../domain/catalog.dart';
 import '../domain/models.dart';
 import 'local_store.dart';
-import 'services.dart';
 
-/// Read-side of the song library plus all per-song user state
-/// (favourites, offline downloads and user-created songs).
+/// Read-side of the song library plus all per-song user state.
+///
+/// The catalogue imported from the user's songbooks is the primary
+/// repertoire. Songs in the catalogue can be corrected through local
+/// overrides; completely new songs use the `us_` prefix.
 class LibraryController extends ChangeNotifier {
   LibraryController({
     required this.store,
-    this.downloadService = const DemoDownloadService(),
-    List<Song> extraSongs = const [],
-  }) : _extraSongs = List.unmodifiable(extraSongs) {
-    _extraSongsById = {for (final song in _extraSongs) song.id: song};
+    List<Song> catalogue = const [],
+  }) : _catalogue = List.unmodifiable(catalogue) {
+    _catalogueById = {for (final song in _catalogue) song.id: song};
     _load();
   }
 
   final LocalStore store;
-  final DownloadService downloadService;
 
   /// Repertoire imported from the user's own songbooks.
-  final List<Song> _extraSongs;
-  late final Map<String, Song> _extraSongsById;
+  final List<Song> _catalogue;
+  late final Map<String, Song> _catalogueById;
+
+  /// Local corrections keyed by catalogue song id.
+  final Map<String, Song> _overrides = {};
 
   final List<Song> _userSongs = [];
   final Set<String> _favoriteIds = {};
-  final Set<String> _downloadedIds = {};
-  final Set<String> _inProgressIds = {};
 
   static const _favoritesKey = 'favorites';
-  static const _downloadsKey = 'downloads';
+  static const _overridesKey = 'song_overrides';
   static const _userSongsKey = 'user_songs';
 
   void _load() {
@@ -40,11 +41,14 @@ class LibraryController extends ChangeNotifier {
         ..clear()
         ..addAll(favorites.whereType<String>());
     }
-    final downloads = store.readList(_downloadsKey);
-    if (downloads != null) {
-      _downloadedIds
-        ..clear()
-        ..addAll(downloads.whereType<String>());
+    final overrides = store.readList(_overridesKey);
+    if (overrides != null) {
+      for (final raw in overrides.whereType<Map<String, dynamic>>()) {
+        final song = Song.fromJson(raw);
+        if (_catalogueById.containsKey(song.id)) {
+          _overrides[song.id] = song;
+        }
+      }
     }
     final userRaw = store.readList(_userSongsKey);
     if (userRaw != null) {
@@ -59,15 +63,21 @@ class LibraryController extends ChangeNotifier {
     }
   }
 
-  /// Catalogue + personal repertoire + user-created songs, sorted by title.
+  /// Catalogue + local overrides + user-created songs, sorted by title.
   List<Song> get songs {
-    final result = <Song>[...kSongs, ..._extraSongs, ..._userSongs];
+    final result = <Song>[
+      for (final song in _catalogue) _overrides[song.id] ?? song,
+      ..._userSongs,
+    ];
     result.sort((a, b) => a.title('it').compareTo(b.title('it')));
     return result;
   }
 
   /// Only the songs created by the user.
   List<Song> get userSongs => List.unmodifiable(_userSongs);
+
+  /// Number of catalogue songs corrected locally.
+  int get overrideCount => _overrides.length;
 
   List<Song> songsWhere(bool Function(Song song) predicate) =>
       songs.where(predicate).toList();
@@ -76,8 +86,13 @@ class LibraryController extends ChangeNotifier {
     for (final song in _userSongs) {
       if (song.id == id) return song;
     }
-    return _extraSongsById[id] ?? kSongsById[id];
+    return _overrides[id] ?? _catalogueById[id];
   }
+
+  /// The untouched catalogue entry, used by "restore original".
+  Song? originalSongById(String id) => _catalogueById[id];
+
+  bool isOverridden(String id) => _overrides.containsKey(id);
 
   Song? userSongById(String id) {
     for (final song in _userSongs) {
@@ -99,19 +114,39 @@ class LibraryController extends ChangeNotifier {
     await _persistUserSongs();
   }
 
+  /// Saves a local correction for a catalogue song.
+  Future<void> saveOverride(Song song) async {
+    if (!_catalogueById.containsKey(song.id)) {
+      throw ArgumentError.value(song.id, 'song', 'unknown catalogue id');
+    }
+    _overrides[song.id] = song;
+    notifyListeners();
+    await _persistOverrides();
+  }
+
+  /// Drops the local correction, restoring the imported text.
+  Future<void> resetOverride(String id) async {
+    _overrides.remove(id);
+    notifyListeners();
+    await _persistOverrides();
+  }
+
   Future<void> deleteUserSong(String id) async {
     _userSongs.removeWhere((song) => song.id == id);
     _favoriteIds.remove(id);
-    _downloadedIds.remove(id);
     notifyListeners();
     await _persistUserSongs();
     await store.writeList(_favoritesKey, _favoriteIds.toList());
-    await store.writeList(_downloadsKey, _downloadedIds.toList());
   }
 
   Future<void> _persistUserSongs() => store.writeList(
         _userSongsKey,
         _userSongs.map((song) => song.toJson()).toList(),
+      );
+
+  Future<void> _persistOverrides() => store.writeList(
+        _overridesKey,
+        _overrides.values.map((song) => song.toJson()).toList(),
       );
 
   List<Tag> tagsFor(Song song) =>
@@ -144,7 +179,10 @@ class LibraryController extends ChangeNotifier {
       if (normalized.isEmpty) return true;
       final title = song.title('it').toLowerCase();
       final author = (song.author ?? '').toLowerCase();
-      return title.contains(normalized) || author.contains(normalized);
+      final version = (song.version ?? '').toLowerCase();
+      return title.contains(normalized) ||
+          author.contains(normalized) ||
+          version.contains(normalized);
     }).toList();
     result.sort((a, b) => a.title('it').compareTo(b.title('it')));
     return result;
@@ -160,46 +198,48 @@ class LibraryController extends ChangeNotifier {
     await store.writeList(_favoritesKey, _favoriteIds.toList());
   }
 
-  bool isDownloaded(String songId) => _downloadedIds.contains(songId);
+  Map<String, dynamic> toBackup() => {
+        'favorites': _favoriteIds.toList()..sort(),
+        'userSongs': _userSongs.map((song) => song.toJson()).toList(),
+        'overrides': _overrides.values.map((song) => song.toJson()).toList(),
+      };
 
-  bool isDownloading(String songId) => _inProgressIds.contains(songId);
+  Future<void> restoreBackup(Map<String, dynamic> data) async {
+    final favorites = data['favorites'];
+    _favoriteIds
+      ..clear()
+      ..addAll((favorites as List<dynamic>? ?? const []).whereType<String>());
 
-  List<Song> get downloadedSongs => songs
-      .where((song) => _downloadedIds.contains(song.id))
-      .toList()
-    ..sort((a, b) => a.title('it').compareTo(b.title('it')));
+    _userSongs
+      ..clear()
+      ..addAll(
+        (data['userSongs'] as List<dynamic>? ?? const [])
+            .whereType<Map<String, dynamic>>()
+            .map(Song.fromJson),
+      );
 
-  Future<void> downloadSong(Song song) async {
-    if (_downloadedIds.contains(song.id) || _inProgressIds.contains(song.id)) {
-      return;
+    _overrides.clear();
+    for (final raw in (data['overrides'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>()) {
+      final song = Song.fromJson(raw);
+      if (_catalogueById.containsKey(song.id)) {
+        _overrides[song.id] = song;
+      }
     }
-    _inProgressIds.add(song.id);
-    notifyListeners();
-    try {
-      await downloadService.download(song);
-      _downloadedIds.add(song.id);
-      await store.writeList(_downloadsKey, _downloadedIds.toList());
-    } finally {
-      _inProgressIds.remove(song.id);
-      notifyListeners();
-    }
-  }
 
-  Future<void> removeDownload(Song song) async {
-    await downloadService.remove(song);
-    _downloadedIds.remove(song.id);
     notifyListeners();
-    await store.writeList(_downloadsKey, _downloadedIds.toList());
+    await store.writeList(_favoritesKey, _favoriteIds.toList());
+    await _persistUserSongs();
+    await _persistOverrides();
   }
 
   Future<void> resetUserData() async {
     _favoriteIds.clear();
-    _downloadedIds.clear();
-    _inProgressIds.clear();
+    _overrides.clear();
     _userSongs.clear();
     notifyListeners();
     await store.remove(_favoritesKey);
-    await store.remove(_downloadsKey);
+    await store.remove(_overridesKey);
     await store.remove(_userSongsKey);
   }
 }

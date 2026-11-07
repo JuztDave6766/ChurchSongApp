@@ -6,9 +6,12 @@ import 'package:flutter/services.dart' show rootBundle;
 import '../domain/models.dart';
 import 'library_controller.dart';
 
-/// Readings for one Sunday (liturgical Year B: Advent 2025 → Christ the King
+/// Readings for one Sunday of liturgical Year A (Advent 2025 → Christ the King
 /// 2026). Citations are short references; the audience opens them in the
 /// paper missal or the app of their choice.
+///
+/// Only entries explicitly marked `verified` are exposed: anything else is
+/// hidden rather than guessed.
 class SundayReading {
   const SundayReading({
     required this.date,
@@ -20,6 +23,9 @@ class SundayReading {
     this.secondReading,
     this.gospel,
     this.themeIds = const [],
+    this.verified = false,
+    this.source,
+    this.sourceUrl,
   });
 
   factory SundayReading.fromJson(Map<String, dynamic> json) {
@@ -35,6 +41,9 @@ class SundayReading {
       gospel: json['gospel'] as String?,
       themeIds:
           (json['themeIds'] as List<dynamic>? ?? const []).whereType<String>().toList(),
+      verified: json['verified'] as bool? ?? false,
+      source: json['source'] as String?,
+      sourceUrl: json['sourceUrl'] as String?,
     );
   }
 
@@ -48,6 +57,12 @@ class SundayReading {
   final String? gospel;
   final List<String> themeIds;
 
+  /// Whether the citations were checked against the official CEI calendar.
+  final bool verified;
+
+  final String? source;
+  final String? sourceUrl;
+
   bool get hasReadings =>
       (firstReading != null && firstReading!.isNotEmpty) ||
       (gospel != null && gospel!.isNotEmpty);
@@ -58,9 +73,9 @@ class SundayReading {
 
 typedef SundJsonLoader = Future<Map<String, dynamic>> Function();
 
-/// Default loader: bundled Year B calendar asset.
+/// Default loader: bundled verified calendar asset.
 Future<Map<String, dynamic>> loadSundaysAsset() async {
-  final raw = await rootBundle.loadString('assets/data/sundays_b.json');
+  final raw = await rootBundle.loadString('assets/data/sundays.json');
   final decoded = jsonDecode(raw);
   return decoded is Map<String, dynamic> ? decoded : {};
 }
@@ -95,6 +110,7 @@ class SundaysController extends ChangeNotifier {
             list
                 .whereType<Map<String, dynamic>>()
                 .map(SundayReading.fromJson)
+                .where((sunday) => sunday.verified && sunday.hasReadings)
                 .toList(),
           );
         _sundays.sort((a, b) => a.date.compareTo(b.date));
@@ -122,10 +138,11 @@ class SundaysController extends ChangeNotifier {
         return sunday;
       }
     }
-    // Fallback: the nearest future (or past) entry.
+    // Before the calendar starts, show the first Sunday; after it ends,
+    // return null instead of repeating stale readings.
+    if (date.isBefore(_sundays.first.date)) return _sundays.first;
     final after = _sundays.where((s) => s.date.isAfter(date)).toList();
-    if (after.isNotEmpty) return after.first;
-    return _sundays.last;
+    return after.isEmpty ? null : after.first;
   }
 }
 

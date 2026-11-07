@@ -1,79 +1,67 @@
-# Canti Liturgici (ChurchSongApp)
+# Canti Liturgici — ChurchSongApp
 
-App Flutter personale per la pastorale musicale: catalogo di canti etichettati
-per celebrazione e momento liturgico, scalette personalizzate e una modalità
-"Celebrazione" per accompagnare l'evento dall'interno dell'app.
+Demo pubblica di un canzoniere liturgico: 254 canti, ricerca, scalette,
+modalità celebrazione, letture domenicali verificate e stampa A4.
 
-## Contenuti
+**Demo:** https://juztdave6766.github.io/ChurchSongApp/
 
-- **28 canti demo** con testi segnaposto originali; le preghiere tradizionali
-  (Padre Nostro, Ave Maria, Magnificat, Salve Regina) sono di pubblico dominio.
-- **254 canti del canzoniere personale**, importati dai PDF in `song-sources/`:
-  - *Canti per la Santa Messa* (ordinati per momento liturgico e anno);
-  - *Lodate e benedite — Canti per la liturgia e per la preghiera* (SNPG-CEI);
-  - *Canti — Santuario della Madonna delle Grazie*.
+## Cosa contiene
 
-> **Uso personale.** I testi importati provengono dai canzonieri dell'utente e
-> restano nel build locale con licenza `personalUse`. Non vanno ridistribuiti
-> in una versione pubblica dell'app. Ogni scheda mostra la fonte e la pagina.
-> La cartella `song-sources/` non è versionata.
-
-Nessun file audio è incluso: la modalità celebrazione è una presentazione
-guidata dei testi con avanzamento automatico delle strofe. L'audio è un "seam"
-futuro già previsto nei modelli (`Song.audioAsset`) e nell'evento.
-
-## Funzioni
-
-- **Libreria cantabile** — ricerca per titolo/autore, preferiti, filtro per
-  celebrazione, momento, tema, stagione (Avvento, Natale, Quaresima, Pasqua,
-  Pentecoste, Defunti, Tradizionale), stile e strumento.
+- **254 canti** importati dai canzonieri dell'autore del repository, con fonte
+  e pagina. I testi sono presentati come canzoniere (accordi sopra il testo in
+  notazione ChordPro, oppure testo con link per ascoltare il brano).
+- **Libreria cantabile** — ricerca per titolo, autore e versione; preferiti;
+  filtri per celebrazione, momento liturgico, tema, stagione, stile e strumento.
 - **Percorso per celebrazione** — si sceglie la funzione liturgica e si
-  sfoglia i canti adatti a ogni momento, con suggerimenti contestuali.
-- **Scalette** — creazione/modifica (nome, momenti, ordine dei canti,
-  selezione dal picker filtrato), persistenza locale, scaletta demo "Messa
-  domenicale".
-- **Modalità Celebrazione** — schermata immersiva con cronometro, avanzamento
-  strofa per strofa, canto precedente/successivo, registrazione dei canti
-  percorsi e riepilogo finale.
-- **Download offline (Premium)** — simulati via `DemoDownloadService`:
-  entitlement, dialog di attivazione demo, download singolo o "scarica tutti",
-  indicatore offline nelle liste.
-- **IT/EN** — cambi lingua immediato, stringhe centralizzate in
-  `lib/core/strings.dart` (custom delegate + `flutter_localizations`).
-- **Tema chiaro/scuro** con palette liturgica (pergamena/viola/oro), Material 3.
+  sfoglia il repertorio adatto a ogni momento.
+- **Scalette** — creazione, modifica, riordino e persistenza locale; cinque
+  modelli pronti costruiti sul repertorio reale e una scaletta demo.
+- **Modalità Celebrazione** — schermata immersiva con avanzamento delle strofe,
+  cronometro e riepilogo finale.
+- **Letture del giorno** — calendario **Anno A** (Avvento 2025 → Cristo Re
+  2026) verificato sulle citazioni CEI. Le voci non verificate sono nascoste.
+- **Stampa A4** — anteprima e PDF con titolo, autore, fonte, tonalità, accordi
+  e testo.
+- **Modifica locale** — ogni canto importato può essere corretto; le modifiche
+  restano nel browser e “Ripristina originale” annulla tutto.
+- **Backup JSON** — esporta e reimporta modifiche, preferiti, scalette e canti
+  personali.
+- **IT/EN** e tema chiaro/scuro.
 
-## Avvio
+## Dati locali
 
-Flutter non è sul PATH di default; è installato in `~/Programs/flutter`.
+Non esistono account, server o sincronizzazione. Preferiti, modifiche,
+scalette e canti personali vivono in `localStorage` (SharedPreferences) del
+browser. Il pulsante **Ripristina demo** cancella i dati locali e riporta
+l'app allo stato iniziale. Usa **Esporta dati** per conservare una copia JSON.
+
+## Sviluppo
+
+Flutter non è sul PATH di default; in questo ambiente è in
+`~/Programs/flutter`.
 
 ```bash
 export PATH="$HOME/Programs/flutter/bin:$PATH"
 
 flutter pub get
-flutter run                 # su dispositivo/emulatore attivo
-flutter run -d chrome       # preview web in hot reload
+flutter run -d chrome
+flutter analyze
+flutter test
 ```
 
-Build web di rilascio:
+Build web con il base path di GitHub Pages:
 
 ```bash
-flutter build web --release
+flutter build web --release --base-href /ChurchSongApp/
 python3 -m http.server 8787 --directory build/web
-```
-
-Test e analisi:
-
-```bash
-flutter analyze   # 0 problemi
-flutter test      # 63 test: modelli, catalogo, import, controller, persistenza, smoke e flussi end-to-end
 ```
 
 ## Import del canzoniere
 
-Il catalogo personale è generato da `tool/import_songbook.py` con poppler:
+Il catalogo è generato da `tool/import_songbook.py` con poppler:
 
 ```bash
-sudo apt install poppler-utils           # pdftohtml, pdftotext
+sudo apt install poppler-utils
 python3 tool/import_songbook.py          # rigenera assets/data/personal_songs.json
 python3 tool/import_songbook.py --report # elenco titoli/autori/tag
 ```
@@ -81,52 +69,47 @@ python3 tool/import_songbook.py --report # elenco titoli/autori/tag
 Lo script ricostruisce l'ordine di lettura dalle coordinate PDF, separa i canti
 dai titoli di sezione, estrae autori e ritornelli, normalizza titoli e accenti,
 deduplica le versioni presenti in più canzonieri e conserva fonte e pagina.
-Il file generato viene caricato all'avvio da `PersonalSongsService` e unito al
-catalogo in `LibraryController`.
+La cartella `song-sources/` con i PDF originali non è versionata.
+
+## Letture domenicali
+
+`assets/data/sundays.json` contiene le 52 domeniche dell'Anno A. Ogni voce ha
+`verified: true`, la citazione CEI e l'URL della fonte. Il controller mostra
+solo le voci verificate e, fuori dall'intervallo del calendario, non ripete
+letture vecchie.
 
 ## Architettura
 
-Local-first, nessun backend: tutto lo stato utente vive in
-`SharedPreferences` come JSON versioned (`churchsong.v1.*`), incapsulato in
-`LocalStore`.
+Local-first, nessun backend: lo stato utente vive in SharedPreferences come
+JSON versionato (`churchsong.v1.*`), incapsulato in `LocalStore`.
 
 ```
 lib/
-  main.dart                     bootstrap: LocalStore + canzoniere personale
-  app.dart                      MultiProvider + MaterialApp (theme, locale, l10n)
-  core/        theme.dart       palette, tipografia (Cormorant + Manrope), componenti
-               strings.dart     stringhe IT/EN + delegate
-  domain/      models.dart      Song, Tag, LiturgicalFunction/Moment, Setlist… (no Flutter)
-               catalog.dart     tag statici, 4 celebrazioni con momenti, 28 canti demo
-  data/        local_store.dart wrapper SharedPreferences
-               personal_songs_service.dart  carica assets/data/personal_songs.json
-               library_controller.dart  catalogo + canzoniere + user songs, filtri
-               setlist_controller.dart  CRUD scalette + seed demo
-               settings_controller.dart lingua, tema, premium
-               services.dart    DownloadService (stub) + SyncService (stub locale)
-  ui/          shell/           shell responsive: bottom nav / navigation rail (≥960px)
-               home/ library/ function/ setlists/ event/ settings/ shared/
-tool/          import_songbook.py  estrattore PDF -> JSON (poppler)
-assets/data/   personal_songs.json  canzoniere personale (254 canti)
-song-sources/  PDF originali dell'utente (ignorati da git)
+  main.dart                     bootstrap
+  app.dart                      provider + MaterialApp (tema, lingua)
+  core/        theme.dart       palette e tipografia
+               strings.dart     stringhe IT/EN
+  domain/      models.dart      Song, Tag, LiturgicalFunction, Setlist…
+               catalog.dart     tag, celebrazioni, modelli di scaletta
+               chordpro.dart    parser ChordPro
+  data/        local_store.dart
+               personal_songs_service.dart
+               library_controller.dart   catalogo, override, preferiti, backup
+               setlist_controller.dart
+               settings_controller.dart
+               sundays_service.dart
+               backup_file*.dart
+  ui/          shell/ home/ library/ function/ setlists/ event/ settings/ shared/
+tool/          import_songbook.py
+assets/data/   personal_songs.json, sundays.json
 ```
 
-Scelte prototipali pensate per l'evoluzione:
+## Licenze
 
-- **i18n**: i titoli dei canti sono `Map<String, String>` per lingua; le
-  stringhe UI vivono in una classe unica pronta a migrare ad ARB/`intl`.
-- **offline**: `DownloadService` è un'interfaccia: sostituire il demo con
-  caricamenti reali (CDN/PDF/audio) non tocca controller né UI.
-- **cloud sync**: `Setlist.remoteId`, `SyncService` e il persist layer
-  isolano già ciò che andrà sincronizzato; sostituire `LocalStore` con un DB
-  (Drift/Isar) è trasparente ai repository.
-- **licenze**: `SongLicense.personalUse` tiene separato il canzoniere locale
-  dal catalogo pubblico/demo e impedisce di confondere i due regimi.
+- **Codice:** MIT — vedi [LICENSE](LICENSE).
+- **Testi, accordi e arrangiamenti:** tutti i diritti riservati, pubblicati con
+  il permesso dell'autore del repository. Dettagli e crediti in
+  [CREDITS.md](CREDITS.md).
 
-## Roadmap
-
-1. ~~Catalogo reale da import~~ — fatto: 254 canti dai tre canzonieri.
-2. Verifica manuale di titoli/autori ambigui e aggiunta di YouTube/spartiti.
-3. Audio reale: player, trasposizione, file scaricati sul device.
-4. Sincronizzazione multi-account con backend quando sarà definito.
-5. Stampa/definitivo dei fogli con tonalità e testi.
+Per segnalazioni di copyright o richieste di rimozione apri una issue:
+https://github.com/JuztDave6766/ChurchSongApp/issues

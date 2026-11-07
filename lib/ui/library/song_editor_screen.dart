@@ -4,7 +4,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/strings.dart';
 import '../../data/library_controller.dart';
-import '../../data/settings_controller.dart';
 import '../../data/youtube_service.dart';
 import '../../domain/catalog.dart';
 import '../../domain/models.dart';
@@ -27,6 +26,7 @@ class _SongEditorScreenState extends State<SongEditorScreen> {
   final _youtubeService = YouTubeService();
   final _titleController = TextEditingController();
   final _authorController = TextEditingController();
+  final _versionController = TextEditingController();
   final _keyController = TextEditingController();
   final _textController = TextEditingController();
   final _youtubeUrlController = TextEditingController();
@@ -45,6 +45,7 @@ class _SongEditorScreenState extends State<SongEditorScreen> {
     if (existing != null) {
       _titleController.text = existing.title('it');
       _authorController.text = existing.author ?? '';
+      _versionController.text = existing.version ?? '';
       _keyController.text = existing.keySignature ?? '';
       _textController.text = existing.sections
           .map((section) =>
@@ -62,6 +63,7 @@ class _SongEditorScreenState extends State<SongEditorScreen> {
   void dispose() {
     _titleController.dispose();
     _authorController.dispose();
+    _versionController.dispose();
     _keyController.dispose();
     _textController.dispose();
     _youtubeUrlController.dispose();
@@ -99,28 +101,8 @@ class _SongEditorScreenState extends State<SongEditorScreen> {
   Future<void> _searchOnline() async {
     final query = _titleController.text.trim();
     if (query.isEmpty) return;
-    final apiKey = context.read<SettingsController>().youtubeApiKey;
-    if (apiKey.isNotEmpty) {
-      setState(() => _fetching = true);
-      final info = await _youtubeService.searchByTitle(query, apiKey);
-      if (!mounted) return;
-      setState(() => _fetching = false);
-      if (info == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.of(context).importError)),
-        );
-        return;
-      }
-      setState(() {
-        if ((info.author ?? '').isNotEmpty) _authorController.text = info.author!;
-        if (info.videoId != null) _youtubeUrlController.text = info.videoId!;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppStrings.of(context).importedData)),
-      );
-      return;
-    }
-    // No API key: open the YouTube search page and let the user copy details.
+    // The public demo never embeds a player and never invents video ids: open
+    // the YouTube search page and let the user paste a verified link.
     final url = YouTubeService.searchUrl(query);
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -148,22 +130,36 @@ class _SongEditorScreenState extends State<SongEditorScreen> {
     }
 
     final now = DateTime.now();
+    final existing = widget.existing;
     final song = Song(
-      id: widget.existing?.id ?? 'us_${now.microsecondsSinceEpoch}',
+      id: existing?.id ?? 'us_${now.microsecondsSinceEpoch}',
       titles: {'it': title},
-      author: _authorController.text.trim(),
+      author: _authorController.text.trim().isEmpty
+          ? null
+          : _authorController.text.trim(),
+      version: _versionController.text.trim().isEmpty
+          ? null
+          : _versionController.text.trim(),
       tagIds: _selectedTags.toList(),
       sections: sections,
-      keySignature: _keyController.text.trim(),
+      keySignature: _keyController.text.trim().isEmpty
+          ? null
+          : _keyController.text.trim(),
       youtubeId: YouTubeService.extractVideoId(_youtubeUrlController.text),
       sheetUrl:
           _sheetUrlController.text.trim().isEmpty
               ? null
               : _sheetUrlController.text.trim(),
-      license: SongLicense.demo,
+      license: existing?.license ?? SongLicense.demo,
+      sourceNote: existing?.sourceNote,
     );
 
-    await context.read<LibraryController>().saveUserSong(song);
+    final library = context.read<LibraryController>();
+    if (song.isUserSong) {
+      await library.saveUserSong(song);
+    } else {
+      await library.saveOverride(song);
+    }
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppStrings.of(context).songSaved)),
@@ -268,6 +264,14 @@ class _SongEditorScreenState extends State<SongEditorScreen> {
             controller: _authorController,
             decoration:
                 InputDecoration(labelText: strings.authorField),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _versionController,
+            decoration: InputDecoration(
+              labelText: strings.versionField,
+              prefixIcon: const Icon(Icons.album_outlined, size: 19),
+            ),
           ),
           const SizedBox(height: 12),
           TextField(

@@ -5,12 +5,10 @@ import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/library_controller.dart';
 import '../../data/setlist_controller.dart';
-import '../../data/settings_controller.dart';
 import '../../domain/catalog.dart';
 import '../../domain/models.dart';
 import '../event/event_screen.dart';
 import '../shared/page_body.dart';
-import '../shared/premium.dart';
 import '../shared/section_header.dart';
 import '../shared/song_sheet.dart';
 import '../shared/song_tile.dart';
@@ -26,14 +24,11 @@ class SetlistDetailScreen extends StatefulWidget {
 }
 
 class _SetlistDetailScreenState extends State<SetlistDetailScreen> {
-  bool _downloadingAll = false;
-
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
     final controller = context.watch<SetlistController>();
     final library = context.watch<LibraryController>();
-    final settings = context.watch<SettingsController>();
     final setlist = controller.byId(widget.setlistId);
 
     if (setlist == null) {
@@ -52,9 +47,6 @@ class _SetlistDetailScreenState extends State<SetlistDetailScreen> {
     final validItems = setlist.items
         .where((item) => library.songById(item.songId) != null)
         .toList();
-    final allDownloaded = validItems.isNotEmpty &&
-        validItems.every((item) => library.isDownloaded(item.songId));
-
     return Scaffold(
       appBar: AppBar(
         title: Text(strings.setlistDetail),
@@ -113,7 +105,6 @@ class _SetlistDetailScreenState extends State<SetlistDetailScreen> {
             _HeroCard(
               setlist: setlist,
               function: function,
-              allDownloaded: allDownloaded,
             ),
             const SizedBox(height: 16),
             Wrap(
@@ -132,36 +123,6 @@ class _SetlistDetailScreenState extends State<SetlistDetailScreen> {
                   icon: const Icon(Icons.edit_outlined, size: 18),
                   label: Text(strings.editSetlist),
                 ),
-                if (!allDownloaded)
-                  OutlinedButton.icon(
-                    onPressed: _downloadingAll
-                        ? null
-                        : () => _downloadAll(setlist, library),
-                    icon: _downloadingAll
-                        ? const SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Icon(
-                            settings.premiumUnlocked
-                                ? Icons.download_rounded
-                                : Icons.workspace_premium_rounded,
-                            size: 18,
-                          ),
-                    label: Text(
-                      _downloadingAll ? strings.downloading : strings.downloadAll,
-                    ),
-                  )
-                else
-                  Chip(
-                    avatar: Icon(
-                      Icons.offline_pin_rounded,
-                      size: 17,
-                      color: scheme.tertiary,
-                    ),
-                    label: Text(strings.allDownloaded),
-                  ),
               ],
             ),
             const SizedBox(height: 26),
@@ -209,26 +170,6 @@ class _SetlistDetailScreenState extends State<SetlistDetailScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Future<void> _downloadAll(
-    Setlist setlist,
-    LibraryController library,
-  ) async {
-    if (!await ensurePremium(context)) return;
-    if (!mounted) return;
-    setState(() => _downloadingAll = true);
-    for (final item in setlist.items) {
-      final song = library.songById(item.songId);
-      if (song != null && !library.isDownloaded(song.id)) {
-        await library.downloadSong(song);
-      }
-    }
-    if (!mounted) return;
-    setState(() => _downloadingAll = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppStrings.of(context).allDownloaded)),
     );
   }
 
@@ -292,13 +233,9 @@ class _SetlistDetailScreenState extends State<SetlistDetailScreen> {
               trailing: Padding(
                 padding: const EdgeInsets.only(right: 4),
                 child: Icon(
-                  library.isDownloaded(song.id)
-                      ? Icons.offline_pin_rounded
-                      : Icons.chevron_right_rounded,
+                  Icons.chevron_right_rounded,
                   size: 20,
-                  color: library.isDownloaded(song.id)
-                      ? scheme.tertiary
-                      : scheme.onSurfaceVariant,
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -372,12 +309,10 @@ class _HeroCard extends StatelessWidget {
   const _HeroCard({
     required this.setlist,
     required this.function,
-    required this.allDownloaded,
   });
 
   final Setlist setlist;
   final LiturgicalFunction? function;
-  final bool allDownloaded;
 
   @override
   Widget build(BuildContext context) {
@@ -418,13 +353,6 @@ class _HeroCard extends StatelessWidget {
                           letterSpacing: 1.4,
                         ),
                   ),
-                  const Spacer(),
-                  if (allDownloaded)
-                    const Icon(
-                      Icons.offline_pin_rounded,
-                      color: AppColors.goldSoft,
-                      size: 22,
-                    ),
                 ],
               ),
               const SizedBox(height: 18),

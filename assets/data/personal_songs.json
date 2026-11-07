@@ -186,7 +186,9 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
+        "esposizione",
         "eucaristia",
         "messa"
       ],
@@ -210,7 +212,9 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
+        "esposizione",
         "eucaristia",
         "messa"
       ],
@@ -242,6 +246,7 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
         "eucaristia",
         "messa"
@@ -707,6 +712,7 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
         "croce",
         "messa",
@@ -828,9 +834,11 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
         "eucaristia",
-        "messa"
+        "messa",
+        "silenzio"
       ],
       "sections": [
         {
@@ -961,8 +969,11 @@
       },
       "author": "Balduzzi",
       "tagIds": [
+        "apertura",
+        "intercessione",
         "mariano",
         "messa",
+        "preghiera",
         "speranza"
       ],
       "sections": [
@@ -993,6 +1004,7 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
         "eucaristia",
         "mariano",
@@ -1289,11 +1301,13 @@
       },
       "author": "T. e M. M. Gragnano, elab. D. Cantino",
       "tagIds": [
+        "apertura",
         "gloria",
         "ingresso",
         "mariano",
         "messa",
-        "pasqua"
+        "pasqua",
+        "preghiera"
       ],
       "sections": [
         {
@@ -1435,9 +1449,13 @@
       },
       "author": null,
       "tagIds": [
+        "conclusione",
         "croce",
+        "introduzione",
         "messa",
-        "tradizionale"
+        "stazione",
+        "tradizionale",
+        "via-crucis"
       ],
       "sections": [
         {
@@ -1962,7 +1980,9 @@
       "tagIds": [
         "croce",
         "messa",
-        "quaresima"
+        "quaresima",
+        "stazione",
+        "via-crucis"
       ],
       "sections": [
         {
@@ -2399,6 +2419,7 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
         "eucaristia",
         "messa"
@@ -3592,7 +3613,9 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
+        "esposizione",
         "eucaristia",
         "messa",
         "penitenza"
@@ -4214,10 +4237,12 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
         "defunti",
         "eucaristia",
-        "messa"
+        "messa",
+        "silenzio"
       ],
       "sections": [
         {
@@ -4414,6 +4439,7 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
         "eucaristia",
         "fiducia",
@@ -5867,8 +5893,10 @@
       },
       "author": "Giombini",
       "tagIds": [
+        "ascolto",
         "eucaristia",
-        "messa"
+        "messa",
+        "preghiera"
       ],
       "sections": [
         {
@@ -5894,8 +5922,10 @@
       },
       "author": "Menichetti",
       "tagIds": [
+        "ascolto",
         "eucaristia",
-        "messa"
+        "messa",
+        "preghiera"
       ],
       "sections": [
         {
@@ -6709,8 +6739,10 @@
       },
       "author": null,
       "tagIds": [
+        "conclusione",
         "congedo",
-        "messa"
+        "messa",
+        "preghiera"
       ],
       "sections": [
         {
@@ -6825,10 +6857,13 @@
       },
       "author": "Henderson",
       "tagIds": [
+        "conclusione",
         "mariano",
         "messa",
         "penitenza",
-        "speranza"
+        "preghiera",
+        "speranza",
+        "via-crucis"
       ],
       "sections": [
         {
@@ -7366,7 +7401,9 @@
         "croce",
         "luce",
         "messa",
-        "quaresima"
+        "quaresima",
+        "stazione",
+        "via-crucis"
       ],
       "sections": [
         {
@@ -7672,9 +7709,12 @@
       },
       "author": null,
       "tagIds": [
+        "adorazione",
         "adorazione-momento",
+        "benedizione",
         "eucaristia",
-        "messa"
+        "messa",
+        "reposizione"
       ],
       "sections": [
         {
@@ -7826,7 +7866,9 @@
         "messa",
         "pace",
         "penitenza",
-        "quaresima"
+        "quaresima",
+        "stazione",
+        "via-crucis"
       ],
       "sections": [
         {
