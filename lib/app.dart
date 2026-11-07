@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 
 import 'core/strings.dart';
 import 'core/theme.dart';
-import 'data/library_controller.dart';
 import 'data/calendar_service.dart';
+import 'data/library_controller.dart';
 import 'data/local_store.dart';
 import 'data/setlist_controller.dart';
 import 'data/settings_controller.dart';

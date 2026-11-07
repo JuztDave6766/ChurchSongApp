@@ -4,12 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:church_song_app/app.dart';
 import 'package:church_song_app/data/local_store.dart';
+
 import 'package:church_song_app/domain/models.dart';
-import 'package:church_song_app/ui/shared/song_tile.dart';
 
 import 'helpers.dart';
+import 'package:church_song_app/ui/shared/song_tile.dart';
 
-late List<Song> _catalogue;
 
 Future<void> _pumpApp(WidgetTester tester) async {
   SharedPreferences.setMockInitialValues({});
@@ -19,6 +19,8 @@ Future<void> _pumpApp(WidgetTester tester) async {
   );
   await tester.pumpAndSettle();
 }
+
+late List<Song> _catalogue;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

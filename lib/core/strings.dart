@@ -587,6 +587,7 @@ class AppStringsIt extends AppStrings {
   String get noSongsYet => 'Nessun canto in questa scaletta';
   @override
   String get addSongs => 'Aggiungi canti';
+  @override
   String get replaceSong => 'Sostituisci canto';
   @override
   String get addToMoment => 'Aggiungi a un momento';
@@ -1112,6 +1113,7 @@ class AppStringsEn extends AppStrings {
   String get noSongsYet => 'No songs in this setlist';
   @override
   String get addSongs => 'Add songs';
+  @override
   String get replaceSong => 'Replace song';
   @override
   String get addToMoment => 'Add to a moment';

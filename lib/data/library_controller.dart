@@ -18,11 +18,21 @@ class LibraryController extends ChangeNotifier {
     _load();
   }
 
+  /// Replaces the bundled catalogue at runtime (used to defer loading the
+  /// large JSON asset until after the first frame).
+  Future<void> loadCatalogue(List<Song> catalogue) async {
+    _catalogue = List.unmodifiable(catalogue);
+    _catalogueById
+      ..clear()
+      ..addAll({for (final song in _catalogue) song.id: song});
+    notifyListeners();
+  }
+
   final LocalStore store;
 
   /// Repertoire imported from the user's own songbooks.
-  final List<Song> _catalogue;
-  late final Map<String, Song> _catalogueById;
+  List<Song> _catalogue;
+  late Map<String, Song> _catalogueById;
 
   /// Local corrections keyed by catalogue song id.
   final Map<String, Song> _overrides = {};
