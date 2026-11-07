@@ -20,6 +20,8 @@ class LiturgicalDay {
     required this.titleIt,
     required this.titleEn,
     required this.seasonId,
+    this.saintIt,
+    this.saintEn,
     this.readings,
     this.verified = true,
     this.source,
@@ -30,6 +32,8 @@ class LiturgicalDay {
   final String titleIt;
   final String titleEn;
   final String seasonId;
+  final String? saintIt;
+  final String? saintEn;
   final Map<String, dynamic>? readings;
   final bool verified;
   final String? source;
@@ -37,6 +41,9 @@ class LiturgicalDay {
 
   String title(String languageCode) =>
       languageCode == 'en' ? titleEn : titleIt;
+
+  String? saint(String languageCode) =>
+      languageCode == 'en' ? saintEn : saintIt;
 
   LiturgicalSeason get season {
     switch (seasonId) {
@@ -67,6 +74,8 @@ class LiturgicalDay {
       titleIt: json['titleIt'] as String? ?? 'Giorno',
       titleEn: json['titleEn'] as String? ?? 'Day',
       seasonId: json['seasonId'] as String? ?? 'tempo-ordinario',
+      saintIt: json['saintIt'] as String?,
+      saintEn: json['saintEn'] as String?,
       readings: json['readings'] is Map<String, dynamic>
           ? json['readings'] as Map<String, dynamic>
           : null,

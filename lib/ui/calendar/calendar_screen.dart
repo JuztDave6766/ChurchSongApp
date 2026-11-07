@@ -463,6 +463,22 @@ class _DayDetail extends StatelessWidget {
             '${day.date.day}/${day.date.month}/${day.date.year}',
             style: Theme.of(context).textTheme.bodySmall,
           ),
+          if (day.saint(strings.languageCode) != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.person_outline_rounded, size: 16, color: scheme.secondary),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    '${strings.saintsOfTheDay}: ${day.saint(strings.languageCode)}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ],
           if (readings != null && day.hasReadings) ...[
             const SizedBox(height: 14),
             _line(strings.firstReading, readings['firstReading'] as String?),
@@ -490,6 +506,13 @@ class _DayDetail extends StatelessWidget {
                 onPressed: onCreateMass,
                 icon: const Icon(Icons.queue_music_rounded, size: 18),
                 label: Text(strings.prepareMassForDay),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => context
+                    .read<LiturgicalCalendarController>()
+                    .refresh(day.date),
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: Text(strings.calendarToday),
               ),
             ],
           ),
